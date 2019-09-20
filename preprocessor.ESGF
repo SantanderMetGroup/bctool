@@ -1,4 +1,4 @@
-#! /bin/bash -xe
+#! /bin/bash -e
 #
 # Sample preprocessor in shell.
 
@@ -355,8 +355,8 @@ echo "Retrieving global data from: ${extdata_path}"
 project=cmip5
 product=output1
 institute=CCCma
-model=$(sed '2q;d' ${BCTABLE} | awk '{print $2}')
-experiment=$(sed '3q;d' ${BCTABLE} | awk '{print $2}')
+model=$(sed '1q;d' ${BCTABLE} | awk '{print $2}')
+experiment=$(sed '2q;d' ${BCTABLE} | awk '{print $2}')
 
 tail -n +4 ${BCTABLE} | while read variable gribcode ltype version ensemble frequency realm table process filter
 do
