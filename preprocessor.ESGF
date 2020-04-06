@@ -8,7 +8,8 @@ extdata_path=$3      # Path to the data
 #
 #+ Settings
 #
-BCTABLE="${PWD}/BCtable"
+#BCTABLE="${PWD}/BCtable"
+BCTABLE="$4"
 wrfpostfilter="convert2grb|set_grb_code|set_grb_ltype|set_extension(grb)"
 prefilter="time_slice"
 postfilter="maskregion|${wrfpostfilter}"

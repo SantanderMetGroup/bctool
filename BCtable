@@ -17,4 +17,5 @@ uas     33       105    v20120410  r1i1p1    day        atmos   day      no
 vas     34       105    v20120410  r1i1p1    day        atmos   day      no
 prsn    141      1      v20120410  r1i1p1    day        atmos   day      no
 tslsi   11       1      v20120618  r1i1p1    day        land    day      yes      day_to_6h
+tslsi_	37		 1		v20120618  r1i1p1	 day		land	day      no		  sea_masked|day_to_6h|rename(sst)
 sic     31       1      v20120618  r1i1p1    day        seaIce  day      yes      sea_masked|day_to_6h
