@@ -1,0 +1,6 @@
+include Makefile
+include *.txt
+include *.rst
+recursive-include wrf_bc_extractor *
+global-exclude __pycache__
+global-exclude *.py[co]
