@@ -86,15 +86,14 @@ function recordOfClosestDate(){
     | awk '$1-'${tdate}'<0 {a+=1} END {print a}'
 }
 
-function bctable(){
-  target=$1
-  col=$2
-  val=$3
-  tcol=$(grep -v '^#' ${BCTABLE} | head -1 | tr ' ' '\n' | grep -v '^$' | nl | awk '/\<'${target}'\>/ {print $1}')
-  scol=$(grep -v '^#' ${BCTABLE} | head -1 | tr ' ' '\n' | grep -v '^$' | nl | awk '/'${col}'/ {print $1}')
-  awk '/\<'${val}'\>/ {print $'${tcol}'}' ${BCTABLE}
+function bctable_header(){
+  val=$1
+  awk '/\<'${val}'\>/ {print $2}' ${BCTABLE}
 }
-#bctable dir abbr ta   # test
+
+function bctable_variables(){
+  awk '{if (a) print; if (substr($1,1,3)=="---") a=1}' ${BCTABLE}
+}
 
 function write_static_files(){
 cat << EOF > myzaxis2m.dat
@@ -352,15 +351,13 @@ write_static_files
 
 echo "Retrieving global data from: ${extdata_path}"
 
-project=cmip5
-product=output1
-institute=CCCma
-model=$(sed '1q;d' ${BCTABLE} | awk '{print $2}')
-experiment=$(sed '2q;d' ${BCTABLE} | awk '{print $2}')
+model=$(bctable_header GCM)
+experiment=$(bctable_header RCP)
 
-tail -n +4 ${BCTABLE} | while read variable gribcode ltype version ensemble frequency realm table process filter
-do
-  test "$process" = "no" && continue
+bctable_variables ${BCTABLE} \
+  | while read variable gribcode ltype version ensemble frequency realm table filter
+  do
+  test "${variable:0:1}" = "#" && continue
   timemsg "Processing ${variable}"
   filespec="${variable}_${table}_${model}_${experiment}_${ensemble}*.nc"
 
