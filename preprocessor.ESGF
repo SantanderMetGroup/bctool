@@ -5,10 +5,10 @@
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
 extdata_path=$3      # Path to the data
+BCTABLE=$4           # BCtable file to process data in the previous path
 #
 #+ Settings
 #
-BCTABLE="${PWD}/BCtable"
 wrfpostfilter="convert2grb|set_grb_code|set_grb_ltype|set_extension(grb)"
 prefilter="time_slice"
 postfilter="maskregion|${wrfpostfilter}"

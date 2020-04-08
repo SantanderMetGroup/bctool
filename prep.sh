@@ -3,12 +3,14 @@
 #
 # Sample script to retrieve ~1 month of data
 DATAPATH="/oceano/gmeteo/WORK/ASNA/DATA/CanESM2"
+BCTABLE="BCtable.CanESM"
+VTABLE="Vtable.CanESM2ml"
 #DATAPATH="/oceano/gmeteo/WORK/zequi/cordex4cds/cmip5/output1/IPSL/IPSL-CM5A-MR"
 
-#cd /oceano/gmeteo/WORK/ASNA/projects/cordex4cds/v1 
-./preprocessor.ESGF 2033-12-24_00:00:00 2033-12-30_00:00:00 ${DATAPATH}
+./preprocessor.ESGF 2033-12-24_00:00:00 2033-12-30_00:00:00 ${DATAPATH} ${BCTABLE}
 
 cd WRF
+ln -sf ../${VTABLE} Vtable
 
 use wrf381
 
