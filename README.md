@@ -6,7 +6,37 @@ This tool extracts boundary conditions from GCMs stored under the ESGF DRS.
 Usage
 -----
 
-_TBD_
+`preprocessor.ESGF STARTDATE ENDDATE BASEPATH BCTABLE`
+
+Contents
+--------
+
+**prep.sh**
+:  Sample driving script that calls the preprocessor and runs WRF chain
+
+**preprocessor.ESGF**
+:  is the main script to convert ESGF DRS data to a format readable by the WRF Preprocessing System.
+
+**BCtable**
+:  Provides additional of a particular GCM for `preprocessor.ESGF`. See examples.
+
+**BCtable.[tag]**
+:  are sample BCtable files for specific GCMs
+
+**Vtable.[tag]**
+:  are sample Vtable files (standard WRF Preprocessing System files)
+
+Requirements
+------------
+
+**WRF/**
+**WRF/geo_em.d01.nc**
+**WRF/ungrib**
+**WRF/metgrid**
+:  Directory with minimal amount of files to run WRF.  In the sample script
+   `prep.sh`, this directory is populated by the `wrf_skel` command available
+   after `use wrf381`.
+
 
 Project workflow
 ----------------
