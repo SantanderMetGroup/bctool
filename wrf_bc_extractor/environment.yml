@@ -1,6 +1,6 @@
 name: wrf_bc_extractor
 channels:
-#- conda-forge
+- conda-forge
 - defaults
 dependencies:
 - pip
