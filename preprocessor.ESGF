@@ -344,7 +344,7 @@ use cdo
 
 read iyy imm trash <<< `echo $sformateddate | tr '_T:-' '    '`
 read fyy fmm trash <<< `echo $eformateddate | tr '_T:-' '    '`
-tmpDir=`pwd`/grbData
+tmpDir=`pwd`/BCdata
 mkdir -p ${tmpDir}
 cd ${tmpDir}
 

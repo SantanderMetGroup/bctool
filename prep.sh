@@ -15,25 +15,25 @@ ln -sf ../${VTABLE} Vtable
 use wrf381
 
 rm -f GRIBFILE.*
-link_grib.csh ../grbData/fx_*.grb
+link_grib.csh ../BCdata/fx_*.grb
 rm -f FX:*
 ln -sf namelist.wps.FX namelist.wps
 ungrib.exe >& ungrib.out.FX
 
 rm -f GRIBFILE.*
-link_grib.csh ../grbData/soil*.grb
+link_grib.csh ../BCdata/soil*.grb
 rm -f SOIL:*
 ln -sf namelist.wps.SOIL namelist.wps
 ungrib.exe >& ungrib.out.SOIL
 
 rm -f GRIBFILE.*
-\ls ../grbData/*.grb | grep -v fx | grep -v soil | xargs link_grib.csh
+\ls ../BCdata/*.grb | grep -v fx | grep -v soil | xargs link_grib.csh
 rm -f FILE:*
 ln -sf namelist.wps.FILE namelist.wps
 ungrib.exe >& ungrib.out.FILE
 
 rm -f PRES*
-ln -sf ../grbData/ecmwf_coeffs
+ln -sf ../BCdata/ecmwf_coeffs
 calc_ecmwf_p.exe
 
 rm -f met_em*
