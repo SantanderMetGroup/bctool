@@ -24,6 +24,12 @@ Contents
 **WRF/ungrib/Variable_Tables/Vtable.[tag]**
 :  are sample Vtable files (standard WRF Preprocessing System files)
 
+**util/**
+:  Utilities to manage the tool tests
+
+**util/clean_WRF_dir.sh TAG**
+:  Moves WPS/WRF output to a `WRF.[TAG]` directory and cleans the test `WRF` dir.
+
 Requirements
 ------------
 
