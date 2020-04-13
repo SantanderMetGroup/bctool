@@ -1,0 +1,6 @@
+*.txt
+*.exe
+*.TBL
+*.nc
+!WRF/geo_em.d01.nc
+RRTM*
