@@ -6,6 +6,8 @@ sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-
 eformateddate=$2     # end date to process
 extdata_path=$3      # Path to the data
 BCTABLE=$4           # BCtable file to process data in the previous path
+# Set a full path (if relative)
+test "${BCTABLE}" = ${BCTABLE#/} && BCTABLE=`pwd`/${BCTABLE}
 #
 #+ Settings
 #
