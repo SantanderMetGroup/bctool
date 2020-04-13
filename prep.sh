@@ -2,12 +2,37 @@
 # prep.sh
 #
 # Sample script to retrieve ~1 month of data
-DATAPATH="/oceano/gmeteo/WORK/ASNA/DATA/CanESM2"
-BCTABLE="BCtable.CanESM"
-VTABLE="Vtable.CanESM2.ml"
-#DATAPATH="/oceano/gmeteo/WORK/zequi/cordex4cds/cmip5/output1/IPSL/IPSL-CM5A-MR"
+model="IPSLCM5"
 
-./preprocessor.ESGF 2033-12-24_00:00:00 2033-12-30_00:00:00 ${DATAPATH} ${BCTABLE}
+function setnml(){
+  var=$1
+  value=$2
+  sed -i -e 's/^\ *'${var}'\ *=.*$/'${var}' = '${value}',/' WRF/namelist.input
+}
+
+case ${model} in
+  CanESM2)
+    DATAPATH="/oceano/gmeteo/WORK/ASNA/DATA/CanESM2"
+    BCTABLE="BCtable.CanESM"
+    VTABLE="Vtable.CanESM2.ml"
+    setnml start_hour 00
+    setnml end_day 30
+    setnml end_hour 00
+    setnml num_metgrid_soil_levels 3
+    ;;
+  IPSLCM5)
+    DATAPATH="/oceano/gmeteo/WORK/zequi/DATASETS/cmip5-cordex4cds-subset/data/cmip5/output1/IPSL/IPSL-CM5A-MR/rcp85"
+    BCTABLE="BCtable.IPSLCM5"
+    VTABLE="Vtable.IPSLCM5"
+    setnml start_hour 03
+    setnml end_day 29
+    setnml end_hour 21
+    setnml num_metgrid_soil_levels 4
+    ;;
+  *) echo "Unknown model: ${model}"; exit ;;
+esac
+
+#./preprocessor.ESGF 2033-12-24_00:00:00 2033-12-30_00:00:00 ${DATAPATH} ${BCTABLE}
 
 cd WRF
 ln -sf ungrib/Variable_Tables/${VTABLE} Vtable
