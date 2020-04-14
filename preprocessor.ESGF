@@ -356,52 +356,46 @@ echo "Retrieving global data from: ${extdata_path}"
 model=$(bctable_header GCM)
 experiment=$(bctable_header RCP)
 
-bctable_variables ${BCTABLE} \
-  | while read variable gribcode ltype version ensemble frequency realm table filter
-  do
+bctable_variables ${BCTABLE} | while read \
+  variable gribcode ltype version run frequency realm table filter
+do
   test "${variable:0:1}" = "#" && continue
   timemsg "Processing ${variable}"
-  filespec="${variable}_${table}_${model}_${experiment}_${ensemble}*.nc"
-
+  filespec="${variable}_${table}_${model}_${experiment}_${run}*.nc"
   case ${variable} in
-	# Fix sftlf and orog
-	sftlf|orog)
-	    file=${variable}_${table}_${model}_${experiment}_${ensemble}.nc
-
-	    # cp ${extdata_path}/${drs}/${file} ${tmpDir}/${variable}.nc
-		f=$(find ${extdata_path} -name ${file})
-		cp ${f} ${tmpDir}/${variable}.nc
-		chmod u+w ${tmpDir}/${variable}.nc
-
-	    if [ "$variable" == "sftlf" ] ; then # [0,100] -> [0,1]
-		cdo -s mulc,0.01 ${variable}.nc s1; mv s1 ${variable}.nc
-	    fi
-	    cdo -s settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} ${variable}.nc s1
-	    cdo -s -f grb setltype,${ltype} -chparam,-1,${gribcode} s1 fx_${variable}.grb
-	    rm s1
-	    ;;
-	tsl|mrlsl)
-	    for year in $(seq $iyy $fyy)
-	    do
-		ifile=$(findfile ${filespec} ${year})
-		ofile=${tmpDir}/${variable}_${year}
-		cp ${ifile} ${ofile}
-		chmod u+w,g+w ${ofile}
-		apply_filter "${filter}" ${ofile}
-	    done
-	    ;;
-	*) # time variables
-	    for year in $(seq $iyy $fyy)
-	    do
-		  ifile=$(findfile ${filespec} ${year})
-		  ofile=${tmpDir}/${variable}_${year}
-		  cdo selyear,${year} -seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} ${ofile} # time_slice
-		  apply_filter "${filter}|${postfilter}" ${ofile}
-	    done
-	    ;;
-  esac
-done
-
+    sftlf|orog) # fx
+      file=${variable}_${table}_${model}_${experiment}_${run}.nc
+      f=$(find ${extdata_path} -name ${file})
+      cp ${f} ${tmpDir}/${variable}.nc
+      chmod u+w ${tmpDir}/${variable}.nc
+      if [ "$variable" == "sftlf" ] ; then # [0,100] -> [0,1]
+        cdo -s mulc,0.01 ${variable}.nc s1; mv s1 ${variable}.nc
+      fi
+      cdo -s settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} ${variable}.nc s1
+      cdo -s -f grb setltype,${ltype} -chparam,-1,${gribcode} s1 fx_${variable}.grb
+      rm s1
+      ;;
+    tsl|mrlsl) # Soil
+      for year in $(seq $iyy $fyy)
+      do
+        ifile=$(findfile ${filespec} ${year})
+        ofile=${tmpDir}/${variable}_${year}
+        cp ${ifile} ${ofile}
+        chmod ug+w ${ofile}
+        apply_filter "${filter}" ${ofile}
+      done
+      ;;
+    *) # time variables
+      for year in $(seq $iyy $fyy)
+      do
+        ifile=$(findfile ${filespec} ${year})
+        ofile=${tmpDir}/${variable}_${year}
+        cdo selyear,${year} -seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} ${ofile} # time_slice
+        apply_filter "${filter}|${postfilter}" ${ofile}
+      done
+      ;;
+  esac # variable
+done # while read
 #
 # Deleting dat files
 #
