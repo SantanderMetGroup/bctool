@@ -32,7 +32,7 @@ case ${model} in
     setnml end_hour 21
     setnml num_metgrid_levels 40
     setnml num_metgrid_soil_levels 4
-    setnml start_date "'2033-12-24_03:00:00'" WRF/namelist.wps.FILE
+    setnml start_date "'2033-12-30_03:00:00'" WRF/namelist.wps.FILE
     setnml interval_seconds 10800 WRF/namelist.wps.FILE
     cp WRF/namelist.wps.FILE WRF/namelist.wps.METGRID
     setnml interval_seconds 21600 WRF/namelist.wps.METGRID

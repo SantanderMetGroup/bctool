@@ -1,4 +1,4 @@
-#! /bin/bash -e
+#! /bin/bash -x
 #
 # Sample preprocessor in shell.
 
@@ -29,14 +29,14 @@ function debugmsg(){
 function findfile(){
   local filespec=$1
   local year=$2
-  find ${extdata_path} -type f -name "${filespec}" \
+  find ${drsdir} -type f -name "${filespec}" \
     | sort \
     | while read f; do
       idate=${f//*_/}; idate=${idate//-*/}
       lendate=${#idate}
       iyear="${year}0101000000"; iyear="${iyear:0:${lendate}}"
       fdate=${f//*_/}; fdate=${fdate//*-/}; fdate=${fdate//.*/}
-      fyear="${year}1231180000"; fyear="${fyear:0:${lendate}}"
+      fyear="${year}1231230000"; fyear="${fyear:0:${lendate}}"
       if test ${iyear} -ge ${idate} -a ${fyear} -le ${fdate}; then
         echo ${f}
         break
@@ -66,7 +66,7 @@ function timeRangeTo6hly(){
   ststamp=$3
   etstamp=$4
   nrec=$(cdo -s ntime ${ifile})
-  test nrec -eq 0 && nrec=1
+  test ${nrec} -eq 0 && nrec=1
   cdo -s seltimestep,1 ${ifile} s1
   cdo -s setdate,${ststamp} s1 s2
   cdo -s settime,$(echo ${ststamp} | awk -FT '{print $2}') s2 s0
@@ -149,16 +149,22 @@ function apply_filter(){
   filterlist=${filterlist%%END*}
   for filt in ${filterlist//|/ }
   do
-    timemsg "  Applying filter: ${filt}"
+    timemsg "    Applying filter: ${filt}"
     read filter_name filter_arguments <<< $(echo ${filt} | tr ')(,' '   ')
     ${filter_name} ${tmpDir}/${variable}_${year} ${filter_arguments}
     if test $? -ne 0; then
-      timemsg "  FAILED"
+      timemsg "    FAILED"
       exit
     fi
   done
 }
 
+function copy(){
+  orig=$1
+  dest=$2
+  cp ${orig} ${dest}
+  chmod ug+w ${dest}
+}
 #
 #+ Filter functions
 #
@@ -168,12 +174,14 @@ function apply_filter(){
 #
 function time_slice(){
   ofile=$1
-  if test "${agg}" == "fx"; then
-    ifile=$(ls ${extdata_path}/${exp}/${dir}/${run}/${ver}/${var//_/}_${agg}_*_${run}.nc)
-    cp ${ifile} ${ofile}
+  if test "${frequency}" == "fx"; then
+    ifile=$(ls ${drsdir}/${filespec})
+    copy ${ifile} ${ofile}
   else
-    ifile=$(findfile ${var} ${year})
-    cdo selyear,${year} -seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} ${ofile}
+    ifile=$(findfile ${filespec} ${year})
+    cdo seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} s84
+    cdo selyear,${year} s84 ${ofile}
+    rm s84
   fi
 }
 
@@ -181,7 +189,7 @@ function use_era_interim(){
   ofile=$1
   arbitrary_year=2014 # It doesn't really matter as long as it is available in ERAINPATH
   ifile="${ERAINPATH}/${arbitrary_year}/${imm}/INTERIM075_${arbitrary_year}${imm}_SFC_${gribcode}.128_an.grb"
-  cp ${ifile} ${ofile}
+  copy ${ifile} ${ofile}
 }
 
 #
@@ -210,6 +218,17 @@ function ringregion(){
   rm ${ifile} # To avoid appending
   cdo cat s43 s44 ${ifile}
   rm -f s4[1234]
+}
+
+function is_land_mask(){
+  ifile=$1
+  land_mask="${ifile}"
+}
+
+function set_start_time(){
+  ifile=$1
+  cdo -s settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} ${ifile} s58
+  mv s58 ${ifile}
 }
 
 function set_grb_code(){
@@ -257,14 +276,23 @@ function convert2grb(){
 function set_extension(){
   ifile=$1
   extension=$2
+  test "${ifile}" = "${land_mask}" && land_mask=${ifile}.${extension}
   mv ${ifile} ${ifile}.${extension}
+}
+
+function percent2one(){
+  ifile=$1
+  cdo -s mulc,0.01 ${ifile} s73
+  mv s73 ${ifile}
 }
 
 function rename(){
   ifile=$1
   bname=$2
-  mv ${ifile} ${ifile//*_/${bname}_}
-  var=${bname} # Poor programming practice: renames loop variable within a function call
+  newname="$(dirname ${ifile})/${ifile//*_/${bname}_}" # preserve _year.ext
+  mv ${ifile} ${newname}
+  test "${ifile}" = "${land_mask}" && land_mask=${newname}
+  variable=${bname} # Poor programming practice: renames loop variable within a function call
 }
 
 function set_hybrid_levels(){
@@ -293,7 +321,7 @@ EOF
 function sea_masked(){
   ifile=$1
   # Assumes .grb extension in the mask file
-  cdo -s ifnotthen fx_sftlf.grb ${ifile} s58
+  cdo -s ifnotthen ${land_mask} ${ifile} s58
   mv s58 ${ifile} 
 }
 
@@ -309,8 +337,7 @@ function remapnn(){
   ifile=$1
   # Fill missing value areas since this tool is usually applied before a masking operation
   export REMAP_EXTRAPOLATE=on
-  # Assumes .grb extension in the mask file
-  cdo -s remapnn,fx_sftlf.grb ${ifile} s60
+  cdo -s remapnn,${land_mask} ${ifile} s60
   mv s60 ${ifile} 
 }
 
@@ -353,48 +380,22 @@ write_static_files
 
 echo "Retrieving global data from: ${extdata_path}"
 
-model=$(bctable_header GCM)
-experiment=$(bctable_header RCP)
+model=$(bctable_header model)
+experiment=$(bctable_header experiment)
 
 bctable_variables ${BCTABLE} | while read \
   variable gribcode ltype version run frequency realm table filter
 do
   test "${variable:0:1}" = "#" && continue
   timemsg "Processing ${variable}"
+  drsdir="${extdata_path}/${frequency}/${realm}/${table}/${run}/${version}/${variable}"
   filespec="${variable}_${table}_${model}_${experiment}_${run}*.nc"
-  case ${variable} in
-    sftlf|orog) # fx
-      file=${variable}_${table}_${model}_${experiment}_${run}.nc
-      f=$(find ${extdata_path} -name ${file})
-      cp ${f} ${tmpDir}/${variable}.nc
-      chmod u+w ${tmpDir}/${variable}.nc
-      if [ "$variable" == "sftlf" ] ; then # [0,100] -> [0,1]
-        cdo -s mulc,0.01 ${variable}.nc s1; mv s1 ${variable}.nc
-      fi
-      cdo -s settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} ${variable}.nc s1
-      cdo -s -f grb setltype,${ltype} -chparam,-1,${gribcode} s1 fx_${variable}.grb
-      rm s1
-      ;;
-    tsl|mrlsl) # Soil
-      for year in $(seq $iyy $fyy)
-      do
-        ifile=$(findfile ${filespec} ${year})
-        ofile=${tmpDir}/${variable}_${year}
-        cp ${ifile} ${ofile}
-        chmod ug+w ${ofile}
-        apply_filter "${filter}" ${ofile}
-      done
-      ;;
-    *) # time variables
-      for year in $(seq $iyy $fyy)
-      do
-        ifile=$(findfile ${filespec} ${year})
-        ofile=${tmpDir}/${variable}_${year}
-        cdo selyear,${year} -seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} ${ofile} # time_slice
-        apply_filter "${filter}|${postfilter}" ${ofile}
-      done
-      ;;
-  esac # variable
+  for year in $(seq $iyy $fyy)
+  do
+    timemsg "  YEAR: ${year}"
+    apply_filter "${prefilter}|${filter}|${postfilter}"
+    test "${frequency}" = "fx" && break
+  done # year
 done # while read
 #
 # Deleting dat files
