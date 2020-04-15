@@ -36,7 +36,7 @@ function findfile(){
       lendate=${#idate}
       iyear="${year}0101000000"; iyear="${iyear:0:${lendate}}"
       fdate=${f//*_/}; fdate=${fdate//*-/}; fdate=${fdate//.*/}
-      fyear="${year}1231230000"; fyear="${fyear:0:${lendate}}"
+      fyear="${year}1231180000"; fyear="${fyear:0:${lendate}}"
       if test ${iyear} -ge ${idate} -a ${fyear} -le ${fdate}; then
         echo ${f}
         break
@@ -172,10 +172,18 @@ function copy(){
 # PIPE-START FUNCTIONS
 # "Input" file in these functions is the output file
 #
+function only_closest_to_sdate(){
+  ofile=$1
+  ifile=$(findfile ${filespec} ${year})
+  cdo seltimestep,$(recordOfClosestDate ${ifile} ${sformateddate/_/T}) ${ifile} s59
+  cdo settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} s59 ${ofile}
+  rm s59
+}
+
 function time_slice(){
   ofile=$1
   if test "${frequency}" == "fx"; then
-    ifile=$(ls ${drsdir}/${filespec})
+    ifile=$(find ${drsdir} -type f -name "${filespec}" | head -n 1)
     copy ${ifile} ${ofile}
   else
     ifile=$(findfile ${filespec} ${year})
@@ -325,14 +333,6 @@ function sea_masked(){
   mv s58 ${ifile} 
 }
 
-function only_closest_to_sdate(){
-  ofile=$1
-  ifile=$(findfile ${filespec} ${year})
-  cdo seltimestep,$(recordOfClosestDate ${ifile} ${sformateddate/_/T}) ${ifile} s59
-  cdo settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} s59 ${ofile}
-  rm s59
-}
-
 function remapnn(){
   ifile=$1
   # Fill missing value areas since this tool is usually applied before a masking operation
@@ -388,7 +388,7 @@ bctable_variables ${BCTABLE} | while read \
 do
   test "${variable:0:1}" = "#" && continue
   timemsg "Processing ${variable}"
-  drsdir="${extdata_path}/${frequency}/${realm}/${table}/${run}/${version}/${variable}"
+  drsdir="${extdata_path}/${experiment}/${frequency}/${realm}/${table}/${run}/${version}"
   filespec="${variable}_${table}_${model}_${experiment}_${run}*.nc"
   for year in $(seq $iyy $fyy)
   do
