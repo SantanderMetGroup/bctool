@@ -15,8 +15,11 @@ Contents
 :  is the main script to convert ESGF DRS data to a format readable by the WRF Preprocessing System.
 
 **BCtable.[tag]**
+
 :  are sample BCtable files for specific GCMs. They provide additional details
-   of a particular GCM run for `preprocessor.ESGF`.
+   of a particular GCM run for `preprocessor.ESGF`. See
+   [README_BCtable](#README_BCtable.md) file for details on the syntax of these
+   files.
 
 **prep.sh**
 :  Sample driving script that calls the preprocessor and runs WRF chain
