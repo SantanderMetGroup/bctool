@@ -37,7 +37,6 @@ Requirements
 ------------
 
 **Climate Data Operators (CDO)**
-
 :  This tool is available at https://code.mpimet.mpg.de/projects/cdo. It can be
    installed via `conda install -c conda-forge cdo`. The tool has been tested
    with cdo v1.9.6 (20190208)
