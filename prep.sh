@@ -2,12 +2,47 @@
 # prep.sh
 #
 # Sample script to retrieve ~1 month of data
-DATAPATH="/oceano/gmeteo/WORK/ASNA/DATA/CanESM2"
-BCTABLE="BCtable.CanESM"
-VTABLE="Vtable.CanESM2.ml"
-#DATAPATH="/oceano/gmeteo/WORK/zequi/cordex4cds/cmip5/output1/IPSL/IPSL-CM5A-MR"
+model="CanESM2"
 
-./preprocessor.ESGF 2033-12-24_00:00:00 2033-12-30_00:00:00 ${DATAPATH} ${BCTABLE}
+function setnml(){
+  var=$1
+  value=$2
+  nml=${3:-WRF/namelist.input}
+  sed -i -e 's/^\ *'${var}'\ *=.*$/'${var}' = '${value}',/' ${nml}
+}
+
+case ${model} in
+  CanESM2)
+    DATAPATH="/oceano/gmeteo/WORK/ASNA/DATA/CanESM2"
+    BCTABLE="BCtable.CanESM2"
+    VTABLE="Vtable.CanESM2.ml"
+    setnml start_hour 00
+    setnml end_day 04
+    setnml end_hour 00
+    setnml num_metgrid_levels 36
+    setnml num_metgrid_soil_levels 3
+    setnml start_date "'2033-12-30_00:00:00'" WRF/namelist.wps.FILE
+    setnml interval_seconds 21600 WRF/namelist.wps.FILE
+    cp WRF/namelist.wps.FILE WRF/namelist.wps.METGRID
+    ;;
+  IPSLCM5)
+    DATAPATH="/oceano/gmeteo/WORK/zequi/DATASETS/cmip5-cordex4cds-subset/data/cmip5/output1/IPSL/IPSL-CM5A-MR"
+    BCTABLE="BCtable.IPSLCM5"
+    VTABLE="Vtable.IPSLCM5"
+    setnml start_hour 03
+    setnml end_day 03
+    setnml end_hour 21
+    setnml num_metgrid_levels 40
+    setnml num_metgrid_soil_levels 4
+    setnml start_date "'2033-12-30_03:00:00'" WRF/namelist.wps.FILE
+    setnml interval_seconds 10800 WRF/namelist.wps.FILE
+    cp WRF/namelist.wps.FILE WRF/namelist.wps.METGRID
+    setnml interval_seconds 21600 WRF/namelist.wps.METGRID
+    ;;
+  *) echo "Unknown model: ${model}"; exit ;;
+esac
+
+./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${DATAPATH} ${BCTABLE}
 
 cd WRF
 ln -sf ungrib/Variable_Tables/${VTABLE} Vtable
@@ -37,6 +72,7 @@ ln -sf ../BCdata/ecmwf_coeffs
 calc_ecmwf_p.exe
 
 rm -f met_em*
+ln -sf namelist.wps.METGRID namelist.wps
 metgrid.exe
 
 real.exe

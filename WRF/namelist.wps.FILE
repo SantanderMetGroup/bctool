@@ -1,14 +1,13 @@
 &share
  wrf_core = 'ARW',
  max_dom = 1,
- start_date = '2033-12-24_00:00:00', '2008-12-16_12:00:00', '2008-12-16_12:00:00',
- end_date   = '2033-12-30_00:00:00', '2008-12-20_00:00:00', '2008-12-20_00:00:00',
- interval_seconds = 21600,
+start_date = '2033-12-30_03:00:00',
+ end_date   = '2034-01-04_00:00:00', '2008-12-20_00:00:00', '2008-12-20_00:00:00',
+interval_seconds = 10800,
  io_form_geogrid = 2,
  debug_level = 0,
  nocolons = .true.,
 /
- interval_seconds = 10800,
 
 &geogrid
  parent_id         = 1,1,2
@@ -40,7 +39,7 @@
 
 &metgrid
  fg_name = 'FILE', 'PRES'
- constants_name = 'FX:2033-12-24_00', 'SOIL:2033-12-24_00'
+ constants_name = 'FX:2033-12-30_00', 'SOIL:2033-12-30_00'
  io_form_metgrid = 2,
 /
  PROCESS_ONLY_BDY = 11,
