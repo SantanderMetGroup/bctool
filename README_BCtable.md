@@ -19,14 +19,14 @@ and/or post-filters for a particular variable, the special tags `BEGIN` and/or
 There are 2 special filters that can be used at the beginning of a pipe. They
 create a stream of data from the files stored following the ESGF DRS:
 
+**only_closest_to_sdate**
+:  TBD
+
 **time_slice**
 :  Takes the requested time period from a variable and makes ir
    available for further filtering.
 
 **use_era_interim**
-:  TBD
-
-**only_closest_to_sdate**
 :  TBD
 
 Most filters take an input stream, process it, and send out the result as an
@@ -36,12 +36,6 @@ output stream to be used by the next filter. This is a list of available filters
 :  TBD
 
 **day_to_6h**
-:  TBD
-
-**ecc_set_grb_code**
-:  TBD
-
-**ecc_set_grb_ltype**
 :  TBD
 
 **fixed_to_6h**

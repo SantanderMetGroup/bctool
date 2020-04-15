@@ -18,7 +18,7 @@ Contents
 
 :  are sample BCtable files for specific GCMs. They provide additional details
    of a particular GCM run for `preprocessor.ESGF`. See
-   [README_BCtable](#README_BCtable.md) file for details on the syntax of these
+   [README_BCtable](README_BCtable.md) file for details on the syntax of these
    files.
 
 **prep.sh**
@@ -35,6 +35,12 @@ Contents
 
 Requirements
 ------------
+
+**Climate Data Operators (CDO)**
+
+:  This tool is available at https://code.mpimet.mpg.de/projects/cdo. It can be
+   installed via `conda install -c conda-forge cdo`. The tool has been tested
+   with cdo v1.9.6 (20190208)
 
 **WRF/**
 :  Directory with minimal amount of files to run WRF.  In the sample script
