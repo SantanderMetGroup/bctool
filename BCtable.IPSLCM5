@@ -7,23 +7,23 @@ product output1
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
 sftlf    172  1    v20111119  r0i0p0  fx   atmos  fx      is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-#orog     129  1    v20111119  r0i0p0  fx   atmos  fx      set_start_time|rename(fx_orog)
-#ta       11   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
-#ua       33   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
+orog     129  1    v20111119  r0i0p0  fx   atmos  fx      set_start_time|rename(fx_orog)
+ta       11   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
+ua       33   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 va       34   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 hus      52   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
-#ps       1    1    v20111119  r1i1p1  6hr  atmos  6hrLev  
-#psl      2    1    v20111119  r1i1p1  6hr  atmos  6hrPlev 
-#sic      31   1    v20111119  r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_6h
-#tos      37   1    v20111119  r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_6h
-#soil139  139  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-#soil170  170  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-#soil183  183  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-#soil236  236  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-#soil39   39   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-#soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-#soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-#soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+ps       1    1    v20111119  r1i1p1  6hr  atmos  6hrLev  
+psl      2    1    v20111119  r1i1p1  6hr  atmos  6hrPlev 
+sic      31   1    v20111119  r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_6h
+tos      37   1    v20111119  r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_6h
+soil139  139  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil170  170  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil183  183  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil236  236  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil39   39   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
 # huss     52   105  v20111119  r1i1p1  day  atmos  day   
 # tas      11   105  v20111119  r1i1p1  day  atmos  day   
 # uas      33   105  v20111119  r1i1p1  day  atmos  day   
