@@ -43,7 +43,8 @@ soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|
 soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
 soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
 ```
-Lines can be commented out by using a `#` symbol. 
+Lines can be commented out by using a `#` symbol. The `grib` and `ltype`
+columns should match those in the WRF Vtable used.
 
 Filters
 -------
@@ -87,9 +88,6 @@ output stream to be used by the next filter. This is a list of available filters
 :  Temporal interpolation in time from daily to 6-hourly frequency. Recommended
    only for slow-varying fields (SST, sea ice, ...).
 
-**fixed_to_6h**
-:  TBD
-
 **is_land_mask**
 :  This filter flags the current variable as the land mask. This sets this
    variable to be used for land masking.
@@ -111,29 +109,42 @@ output stream to be used by the next filter. This is a list of available filters
    sea.
 
 **ringregion**
-:  TBD
+:  Masks only the boundaries of a given region, further reducing the file
+   size by removing data not only outside the domain, but also in the interior
+   of the domain. This option is not usable by WRF when sst_update is active
+   and/or a rotated lat-lon projection is in use. In practice, this is unusable
+   for regional climate simulations with WRF, but it could be usable by other
+   models.
 
 **sea_masked**
-:  TBD
+:  The field is defined only over the sea. Mask out all land points according
+   to the variable flagged as *is_land_mask*.
 
 **set_extension**
-:  TBD
+:  Changes (or sets) the extension of the output data.
 
 **set_grb_code**
-:  TBD
+:  For grib streams (i.e. after the *convert2grb* filter), sets the grib
+   variable code indicated in the table.
 
 **set_grb_ltype**
-:  TBD
+:  For grib streams (i.e. after the *convert2grb* filter), sets the grib
+   level type indicated in the table.
 
 **set_hybrid_levels**
-:  TBD
+:  For grib streams (i.e. after the *convert2grb* filter), converts the
+   hybrid vertical levels coordinate to GRIB conventions.
 
 **set_start_time**
-:  TBD
+:  Sets the date and time of the stream to the start date and time of the
+   selected period. Usually applied to constant fields (orog, sftlf) or to
+   initial conditions (soil variables).
 
 **split_soil_mois_grb**
-:  TBD
+:  This is ad-hoc filter to split the soil moisture information into a single
+   file for each level. Grib output is assumed.
 
 **split_soil_temp_grb**
-:  TBD
+:  This is ad-hoc filter to split the soil temperature information into a
+   single file for each level. Grib output is assumed.
 

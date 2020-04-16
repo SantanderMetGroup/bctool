@@ -27,6 +27,10 @@ required for a given RCM. In this context, this tool provides:
  * Units transformation
  * Management of alternative sources for mandatory input initial conditions
 
+This is **NOT** a user tool. It is designed to run by the data, on a machine
+with local access to model data following the ESGF DRS (i.e. typically, an ESGF
+node).
+
 Usage
 -----
 
@@ -61,7 +65,6 @@ script to convert ESGF DRS data to a format readable by the WRF Preprocessing
 System, the following files:
 
 **BCtable.[tag]**
-
 :  are sample BCtable files for specific GCMs. They provide additional details
    of a particular GCM run for `preprocessor.ESGF`. See
    [README_BCtable](README_BCtable.md) file for details on the syntax of these
@@ -92,13 +95,21 @@ Requirements
    `prep.sh`, this directory is populated by the `wrf_skel` command available
    after `use wrf381`.
 
-
 Project workflow
 ----------------
 Development follows Git-flow with branches:
 
  * __master__ as release-only branch
  * __devel__ as main development branch, allowing only merges from task-specific branches
+
+TO-DO
+-----
+ 
+ [ ] Improve land-sea masking to extend fields such as SST towards the
+     coastline of the RCM higher resolution landmask.
+
+ [ ] Improve soil data processing filters. They are currently ad-hoc for
+     specific models.
 
 Acknowledgements
 ----------------
