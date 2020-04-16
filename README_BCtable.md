@@ -4,15 +4,15 @@ BCtable
 BCtable is an ASCII formatted file to customize the way `preprocessor.ESGF`
 processes variables. It allows selecting a particular version of a variable and
 select it from a particular realm at a particular frequency. Additionally, the
-variables can be filtered (see [Filters](#Filters) below).
+variables can be filtered (see [Filters](#filters) below).
 
 Format
 ------
 
 The file starts with a set of keyword-value pairs used to set some mandatory
 metadata (model, experiment) along with any other extra keywords. A blank line
-separates the keyword-value header from the variable table itself. Valiable
-processing lines start after a line beginninng with at least three dashes
+separates the keyword-value header from the variable table itself. Variable
+processing lines start after a line beginning with at least three dashes
 (`---`).  This is a sample BCtable file:
 
 ```
@@ -97,13 +97,13 @@ output stream to be used by the next filter. This is a list of available filters
    The default in `preprocessor.ESGF` is the EURO-CORDEX domain.
 
 **percent2one**
-:  Unit convesion from percent to values between 0 and 1. Common for fractional
+:  Unit conversion from percent to values between 0 and 1. Common for fractional
    land masks.
 
 **remapnn**
-:  Regridding to the land mask grid by nearest neigbour interpolation.
+:  Regridding to the land mask grid by nearest neighbour interpolation.
 
-**rename**
+**rename(_name_)**
 :  Renames a variable. Useful to avoid overwriting files when the same variable
    is processed twice. E.g. skin temperature might contain SST values over the
    sea.
@@ -120,8 +120,8 @@ output stream to be used by the next filter. This is a list of available filters
 :  The field is defined only over the sea. Mask out all land points according
    to the variable flagged as *is_land_mask*.
 
-**set_extension**
-:  Changes (or sets) the extension of the output data.
+**set_extension(_ext_)**
+:  Changes (or sets) the extension _ext_ to the output data.
 
 **set_grb_code**
 :  For grib streams (i.e. after the *convert2grb* filter), sets the grib
@@ -147,4 +147,3 @@ output stream to be used by the next filter. This is a list of available filters
 **split_soil_temp_grb**
 :  This is ad-hoc filter to split the soil temperature information into a
    single file for each level. Grib output is assumed.
-

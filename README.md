@@ -105,11 +105,11 @@ Development follows Git-flow with branches:
 TO-DO
 -----
  
- [ ] Improve land-sea masking to extend fields such as SST towards the
-     coastline of the RCM higher resolution landmask.
+ * Improve land-sea masking to extend fields such as SST towards the
+   coastline of the RCM higher resolution landmask.
 
- [ ] Improve soil data processing filters. They are currently ad-hoc for
-     specific models.
+ * Improve soil data processing filters. They are currently ad-hoc for
+   specific models.
 
 Acknowledgements
 ----------------
