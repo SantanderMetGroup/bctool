@@ -1,0 +1,33 @@
+#
+# share
+#
+max_dom 1
+start_date '2033-12-30_00:00:00'
+end_date '2034-01-04_00:00:00'
+interval_seconds 21600
+share.nocolons .true.
+#
+# geogrid
+#
+e_we 127
+e_sn 124
+dx 0.44000
+dy 0.44000
+map_proj 'lat-lon'
+ref_lon -44.140691
+ref_lat 60.205741
+stand_lon -18
+geog_data_path '/oceano/gmeteo/DATA/WRF/wps_topo/geog_WPS410'
+geogrid.pole_lat 39.25
+geogrid.pole_lon 180
+geogrid.ref_x 11
+geogrid.ref_y 113
+#
+# ungrib
+#
+prefix 'FILE'
+#
+# metgrid
+#
+fg_name 'FILE','PRES'
+metgrid.constants_name 'FX:2033-12-30_00','SOIL:2033-12-30_00'

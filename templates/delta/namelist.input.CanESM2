@@ -1,0 +1,4 @@
+num_metgrid_levels 36
+num_metgrid_soil_levels 3
+start_date "'2033-12-30_00:00:00'" WRF/namelist.wps.FILE
+interval_seconds 21600 WRF/namelist.wps.FILE
