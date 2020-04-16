@@ -4,7 +4,7 @@ BCtable
 BCtable is an ASCII formatted file to customize the way `preprocessor.ESGF`
 processes variables. It allows selecting a particular version of a variable and
 select it from a particular realm at a particular frequency. Additionally, the
-variables can be filtered (see #Filters below).
+variables can be filtered (see [Filters](#Filters) below).
 
 Format
 ------
@@ -81,28 +81,34 @@ Most filters take an input stream, process it, and send out the result as an
 output stream to be used by the next filter. This is a list of available filters:
 
 **convert2grb**
-:  TBD
+:  Converts the stream to GRIB format
 
 **day_to_6h**
-:  TBD
+:  Temporal interpolation in time from daily to 6-hourly frequency. Recommended
+   only for slow-varying fields (SST, sea ice, ...).
 
 **fixed_to_6h**
 :  TBD
 
 **is_land_mask**
-:  TBD
+:  This filter flags the current variable as the land mask. This sets this
+   variable to be used for land masking.
 
 **maskregion**
-:  TBD
+:  Masks (in practice, crops, due to missing value compression) a given region.
+   The default in `preprocessor.ESGF` is the EURO-CORDEX domain.
 
 **percent2one**
-:  TBD
+:  Unit convesion from percent to values between 0 and 1. Common for fractional
+   land masks.
 
 **remapnn**
-:  TBD
+:  Regridding to the land mask grid by nearest neigbour interpolation.
 
 **rename**
-:  TBD
+:  Renames a variable. Useful to avoid overwriting files when the same variable
+   is processed twice. E.g. skin temperature might contain SST values over the
+   sea.
 
 **ringregion**
 :  TBD
