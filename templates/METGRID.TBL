@@ -9,6 +9,10 @@ name=ST
         fill_lev = 200 : ST100200(200100)
 # ELSE IF
         fill_lev =  10 : ST000010(200100)
+        fill_lev =  40 : ST010040(200100)
+        fill_lev = 255 : ST040255(200100)
+# ELSE IF
+        fill_lev =  10 : ST000010(200100)
         fill_lev =  35 : ST010035(200100)
         fill_lev = 100 : ST035100(200100)
         fill_lev = 300 : ST100300(200100)
@@ -29,6 +33,10 @@ name=SM
         fill_lev =  40 : SM010040(200100)
         fill_lev = 100 : SM040100(200100)
         fill_lev = 200 : SM100200(200100)
+# ELSE IF
+        fill_lev =  10 : SM000010(200100)
+        fill_lev =  40 : SM010040(200100)
+        fill_lev = 255 : SM040255(200100)
 # ELSE IF
         fill_lev =  10 : SM000010(200100)
         fill_lev =  35 : SM010035(200100)
@@ -634,10 +642,12 @@ mpas_name=uReconstructMeridional
         fill_lev=200100:const(-1.E30)
 ========================================
 name=SST
-        interp_option=sixteen_pt+four_pt
+        interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search
         fill_missing=0.
         missing_value=-1.E30
         flag_in_output=FLAG_SST
+        masked=land
+        interp_mask=LANDSEA(1)
 ========================================
 name=QV
 mpas_name=qv
