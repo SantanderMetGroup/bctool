@@ -1,6 +1,13 @@
-#! /bin/bash -x
+#! /bin/bash
 #
 # Sample preprocessor in shell.
+
+#-x or -o xtrace Debug
+#[-z "${BCTOOL_DEBUG}"] && set -x
+#-e or -o errexit - exit when a command fails
+#-u or -o nounset - exit when trying to use undefined variable
+#-o pipefail - return the exit code of piped commands that error
+set -euo pipefail
 
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
@@ -370,8 +377,6 @@ function split_soil_mois_grb(){
 #+ MAIN
 #
 timemsg BEGIN
-use netcdf
-use cdo
 
 read iyy imm trash <<< `echo $sformateddate | tr '_T:-' '    '`
 read fyy fmm trash <<< `echo $eformateddate | tr '_T:-' '    '`
