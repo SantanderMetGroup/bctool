@@ -1,9 +1,11 @@
+#!/bin/bash
 set -x
 #-e or -o errexit - exit when a command fails
 #-u or -o nounset - exit when trying to use undefined variable
 #-o pipefail - return the exit code of piped commands that error
 set -euo pipefail
 
+WRFDIR=${1:-WRF}
 cd ${WRFDIR} || exit
 #
 # WPS
