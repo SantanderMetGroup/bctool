@@ -1,7 +1,37 @@
-#!/bin/bash -xe
+#!/bin/bash
 # prep.sh
 #
 # Sample script to retrieve ~1 month of data
+
+#-x or -o xtrace Debug
+#set -x
+#-e or -o errexit - exit when a command fails
+#-u or -o nounset - exit when trying to use undefined variable
+#-o pipefail - return the exit code of piped commands that error
+set -euo pipefail
+
+#check commands depencies
+command -v wget   >/dev/null 2>&1 || { echo >&2 " The command wget it's required but it's not installed.  Aborting."; exit 1; }
+command -v tar    >/dev/null 2>&1 || { echo >&2 " The command tar it's required but it's not installed.  Aborting.";  exit 1; }
+command -v xz     >/dev/null 2>&1 || { echo >&2 " The command xz it's required but it's not installed.  Aborting.";   exit 1; }
+command -v wget   >/dev/null 2>&1 || { echo >&2 " The command wget it's required but it's not installed.  Aborting."; exit 1; }
+command -v sed    >/dev/null 2>&1 || { echo >&2 " The command sed it's required but it's not installed.  Aborting.";  exit 1; }
+command -v grep   >/dev/null 2>&1 || { echo >&2 " The command grep it's required but it's not installed.  Aborting."; exit 1; }
+command -v cdo    >/dev/null 2>&1 || { echo >&2 " The command cdo it's required but it's not installed.  Aborting.";  exit 1; }
+command -v ncdump >/dev/null 2>&1 || { echo >&2 " The netcdf-C it's required but it's not installed.  Aborting.";     exit 1; }
+
+export TEMPDIR=$(pwd)/temp
+export WGETOPTS="--no-verbose --continue --timestamping --directory-prefix=$TEMPDIR" 
+export WRFDIR=$(pwd)/WRF
+mkdir -p $TEMPDIR
+#wget $WGETOPTS https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+#bash $TEMPDIR/Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda3
+#eval "$($HOME/miniconda3/bin/conda shell.bash hook)"
+#conda init
+#conda install -c conda-forge cdo
+
+
+
 model="CanESM2"
 
 case ${model} in
@@ -30,19 +60,18 @@ function setnml(){
   fi
 }
 
-updatenml(){
+function updatenml(){
   update=$1
   nml=${2:-namelist.input}
   grep -v '^#' ${update} | while read key value; do
     setnml "${key}" "${value}" ${nml}
   done
 }
-<<comm
-./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 
+./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
+mkdir -p $WRFDIR
 bash util/deploy_WRF_CMake_binaries.sh
-comm
-cd WRF
+cd $WRFDIR
 #
 #  WPS
 #
