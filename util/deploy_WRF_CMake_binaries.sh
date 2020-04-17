@@ -6,7 +6,14 @@ set -x
 set -euo pipefail
 
 WRFDIR=${1:-WRF}
+
+TEMPDIR=${PWD}/temp
+mkdir -p $TEMPDIR || exit
+
+mkdir -p ${WRFDIR}
 cd ${WRFDIR} || exit
+
+WGETOPTS="--no-verbose --continue --timestamping --directory-prefix=$TEMPDIR"
 #
 # WPS
 #
