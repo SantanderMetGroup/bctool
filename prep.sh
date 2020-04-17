@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # prep.sh
 #
 # Sample script to retrieve ~1 month of data
@@ -68,11 +68,11 @@ function updatenml(){
   done
 }
 
-#./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
+./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 mkdir -p $WRFDIR
 bash util/deploy_WRF_CMake_binaries.sh
 
-cd WRF
+cd $WRFDIR
 #
 #  WPS
 #
