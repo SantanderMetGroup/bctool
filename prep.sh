@@ -44,7 +44,7 @@ updatenml(){
 
 bash util/deploy_WRF_CMake_binaries.sh
 
-cd WRF414
+cd WRF
 #
 #  WPS
 #

@@ -1,4 +1,4 @@
-FOLDER=WRF414
+FOLDER=WRF
 mkdir ${FOLDER} || exit
 cd ${FOLDER} || exit
 #
