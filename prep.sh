@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # prep.sh
 #
 # Sample script to retrieve ~1 month of data
