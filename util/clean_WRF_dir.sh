@@ -1,3 +1,14 @@
+#!/bin/bash 
+#
+#
+
+#print debug if BCTOOL_DEBUG it's defined
+test -n "${BCTOOL_DEBUG}" && set -x
+#-e or -o errexit - exit when a command fails
+#-u or -o nounset - exit when trying to use undefined variable
+#-o pipefail - return the exit code of piped commands that error
+set -euo pipefail
+
 tag=$1
 target="WRF.${tag}"
 mkdir $target || exit
