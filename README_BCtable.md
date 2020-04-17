@@ -16,11 +16,13 @@ processing lines start after a line beginning with at least three dashes
 (`---`).  This is a sample BCtable file:
 
 ```
+data_path /oceano/gmeteo/DATA/CMIP5/output1/IPSL/IPSL
 project cmip5
 institute IPSL
 model IPSL-CM5A-MR
 experiment rcp85
 product output1
+era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
@@ -43,8 +45,14 @@ soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|
 soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
 soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
 ```
-Lines can be commented out by using a `#` symbol. The `grib` and `ltype`
-columns should match those in the WRF Vtable used.
+Lines can be commented out by using a `#` symbol.
+
+*data_path* is the path to a directory containing model data for a particular
+GCM. It should point to the directory where the
+`<experiment>/<frequency>/<realm>/...` structure lives.
+
+The `grib` and `ltype` columns in the variable section should match those in
+the WRF Vtable used.
 
 Filters
 -------
@@ -74,9 +82,10 @@ create a stream of data from the files stored following the ESGF DRS:
 
 **use_era_interim**
 :  Use ERA-Interim data to replace a missing soil variable (moisture and or
-   temperature). These variable are only required as initial conditions and are
+   temperature). These variables are only required as initial conditions and are
    therefore only needed for the model spin up. They are not used along the
-   boundaries.
+   boundaries. The path to the ERA-Interim data MUST be set in the header
+   (*era_interim_path*, see example above)
 
 Most filters take an input stream, process it, and send out the result as an
 output stream to be used by the next filter. This is a list of available filters:

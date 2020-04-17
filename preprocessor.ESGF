@@ -4,8 +4,7 @@
 
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
-extdata_path=$3      # Path to the data
-BCTABLE=$4           # BCtable file to process data in the previous path
+BCTABLE=$3           # BCtable file
 # Set a full path (if relative)
 test "${BCTABLE}" = ${BCTABLE#/} && BCTABLE=`pwd`/${BCTABLE}
 #
@@ -14,7 +13,6 @@ test "${BCTABLE}" = ${BCTABLE#/} && BCTABLE=`pwd`/${BCTABLE}
 wrfpostfilter="convert2grb|set_grb_code|set_grb_ltype|set_extension(grb)"
 prefilter="time_slice"
 postfilter="maskregion|${wrfpostfilter}"
-ERAINPATH="/oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis" # Just in case some IC values are taken from ERA-Interim
 #
 #+ Functions
 #
@@ -195,6 +193,11 @@ function time_slice(){
 
 function use_era_interim(){
   ofile=$1
+  ERAINPATH=$(bctable_header era_interim_path)
+  if test -z "${ERAINPATH}"; then
+    timemsg "Error: 'era_interim_path' not set in ${BCTABLE}, that calls use_era_interim filter"
+    exit 2
+  fi
   arbitrary_year=2014 # It doesn't really matter as long as it is available in ERAINPATH
   ifile="${ERAINPATH}/${arbitrary_year}/${imm}/INTERIM075_${arbitrary_year}${imm}_SFC_${gribcode}.128_an.grb"
   copy ${ifile} ${ofile}
@@ -378,6 +381,7 @@ cd ${tmpDir}
 
 write_static_files
 
+extdata_path=$(bctable_header data_path)
 echo "Retrieving global data from: ${extdata_path}"
 
 model=$(bctable_header model)

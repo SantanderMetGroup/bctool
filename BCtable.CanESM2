@@ -1,3 +1,4 @@
+data_path /oceano/gmeteo/WORK/ASNA/DATA/CanESM2
 project cmip5
 institute CCCma
 model CanESM2

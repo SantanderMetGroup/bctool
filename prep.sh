@@ -6,12 +6,10 @@ model="CanESM2"
 
 case ${model} in
   CanESM2)
-    DATAPATH="/oceano/gmeteo/WORK/ASNA/DATA/CanESM2"
     BCTABLE="BCtable.CanESM2"
     VTABLE="Vtable.CanESM2.ml"
     ;;
   IPSLCM5)
-    DATAPATH="/oceano/gmeteo/WORK/zequi/DATASETS/cmip5-cordex4cds-subset/data/cmip5/output1/IPSL/IPSL-CM5A-MR"
     BCTABLE="BCtable.IPSLCM5"
     VTABLE="Vtable.IPSLCM5"
     ;;
@@ -40,7 +38,7 @@ updatenml(){
   done
 }
 
-./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${DATAPATH} ${BCTABLE}
+./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 
 bash util/deploy_WRF_CMake_binaries.sh
 

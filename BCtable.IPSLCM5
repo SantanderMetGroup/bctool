@@ -1,8 +1,10 @@
+data_path /oceano/gmeteo/WORK/zequi/DATASETS/cmip5-cordex4cds-subset/data/cmip5/output1/IPSL/IPSL
 project cmip5
 institute IPSL
 model IPSL-CM5A-MR
 experiment rcp85
 product output1
+era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis 
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 

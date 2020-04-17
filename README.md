@@ -38,17 +38,13 @@ The main script to convert ESGF DRS data to a format readable by the WRF
 Preprocessing System is `preprocessor.ESGF`:
 
 ```bash
-preprocessor.ESGF STARTDATE ENDDATE DRSBASEPATH BCTABLE
+preprocessor.ESGF STARTDATE ENDDATE BCTABLE
 ```
 
 where:
 
  * *STARTDATE* and *ENDDATE* delimit the time period to be retrieved, formatted
    as e.g. 2033-12-24T00:00:00
-
- * *DRSBASEPATH* is the path to a directory containing model data for a
-   particular GCM. It should point to the directory where the
-   `<experiment>/<frequency>/<realm>/...` structure lives.
 
  * *BCTABLE* is an ASCII text formatted file, specifying the variables to read
    and how to process them (see [README_BCtable](README_BCtable.md)).
