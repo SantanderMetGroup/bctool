@@ -60,10 +60,8 @@ updatenml ../templates/delta/namelist.wps.SOIL namelist.wps.SOIL
 
 for nmlsuffix in FILE FX SOIL METGRID
 do
-  if test -e ../templates/delta/namelist.wps.${nmlsuffix}.${model}
-  then
-    updatenml ../templates/delta/namelist.wps.${nmlsuffix}.${model} namelist.wps.${nmlsuffix}
-  fi
+  nmlmodel="../templates/delta/namelist.wps.${nmlsuffix}.${model}"
+  test -e ${nmlmodel} && updatenml ${nmlmodel} namelist.wps.${nmlsuffix}
 done
 
 test -f metgrid/METGRID.TBL.default || mv metgrid/METGRID.TBL metgrid/METGRID.TBL.default

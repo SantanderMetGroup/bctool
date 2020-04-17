@@ -249,6 +249,14 @@ name=SM040100
         fill_missing=1.
         flag_in_output=FLAG_SM040100
 ========================================
+name=SM040255
+        interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search
+        masked=water
+        interp_mask=LANDSEA(0)
+        missing_value=-1.E30
+        fill_missing=1.
+        flag_in_output=FLAG_SM040255
+========================================
 name=SM100200
         interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search
         masked=water
@@ -312,6 +320,14 @@ name=ST040100
         missing_value=-1.E30
         fill_missing=285.
         flag_in_output=FLAG_ST040100
+========================================
+name=ST040255
+        interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search
+        masked=water
+        interp_mask=LANDSEA(0)
+        missing_value=-1.E30
+        fill_missing=285.
+        flag_in_output=FLAG_ST040255
 ========================================
 name=ST100200
         interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search

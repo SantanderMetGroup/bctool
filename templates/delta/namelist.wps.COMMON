@@ -30,4 +30,4 @@ prefix 'FILE'
 # metgrid
 #
 fg_name 'FILE','PRES'
-metgrid.constants_name 'FX:2033-12-30_00','SOIL:2033-12-30_00'
+metgrid.constants_name 'FX_2033-12-30_00','SOIL_2033-12-30_00'
