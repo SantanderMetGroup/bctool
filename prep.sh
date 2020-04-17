@@ -37,11 +37,11 @@ updatenml(){
     setnml "${key}" "${value}" ${nml}
   done
 }
-
+<<comm
 ./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 
 bash util/deploy_WRF_CMake_binaries.sh
-
+comm
 cd WRF
 #
 #  WPS
@@ -66,19 +66,19 @@ test -f metgrid/METGRID.TBL.default || mv metgrid/METGRID.TBL metgrid/METGRID.TB
 ln -sf ../../templates/METGRID.TBL metgrid/METGRID.TBL
 
 rm -f GRIBFILE.*
-./link_grib.csh ../BCdata/fx_*.grb
+./link_grib.sh ../BCdata/fx_*.grb
 rm -f FX:*
 ln -sf namelist.wps.FX namelist.wps
 ./ungrib.exe >& ungrib_FX.out
 
 rm -f GRIBFILE.*
-./link_grib.csh ../BCdata/soil*.grb
+./link_grib.sh ../BCdata/soil*.grb
 rm -f SOIL:*
 ln -sf namelist.wps.SOIL namelist.wps
 ./ungrib.exe >& ungrib_SOIL.out
 
 rm -f GRIBFILE.*
-\ls ../BCdata/*.grb | grep -v fx | grep -v soil | xargs ./link_grib.csh
+\ls ../BCdata/*.grb | grep -v fx | grep -v soil | xargs ./link_grib.sh
 rm -f FILE:*
 ln -sf namelist.wps.FILE namelist.wps
 ./ungrib.exe >& ungrib_FILE.out
