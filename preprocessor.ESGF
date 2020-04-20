@@ -1,6 +1,13 @@
-#! /bin/bash -x
+#!/bin/bash
 #
 # Sample preprocessor in shell.
+
+#print debug if BCTOOL_DEBUG it's defined
+test -n "${BCTOOL_DEBUG}" && set -x
+#-e or -o errexit - exit when a command fails
+#-u or -o nounset - exit when trying to use undefined variable
+#-o pipefail - return the exit code of piped commands that error
+set -euo pipefail
 
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
@@ -329,6 +336,34 @@ EOF
   rm s56 s57 *_bnds.txt myzaxisinvert.dat 
 }
 
+function set_hybrid_levels_python(){
+  ifile=$1
+  cdo -s invertlev ${ifile} s56
+  python3 - << EOF
+from netCDF4 import Dataset
+import numpy as np
+with Dataset("${ifile}","r") as ncid:
+  ap_bnds = ncid["ap_bnds"]
+  ap_bnds = np.concatenate((ap_bnds[:,1],ap_bnds[-1:,0]))
+  b_bnds = ncid["b_bnds"]
+  b_bnds = np.concatenate((b_bnds[:,1],b_bnds[-1:,0]))
+  hlev = np.vstack((ap_bnds,b_bnds))
+  with open("ecmwf_coeffs") as fid:
+    for i,a in enumerate(hlev.T):
+      fid.write("{:d} {:10.3f} {:10.3f}".format(i,a[0],a[1]))
+  nlevels = ncid['lev'].size
+  with open("myzaxisinvert.dat") as fid:
+    fid.write("zaxistype = hybrid")
+    fid.write("size      = {}".format(nlevels))
+    fid.write("levels    = {}".format(" ".join(map(str,range(1,nlevels+1))))
+    fid.write("vctsize   = {}".format(2*nlevels+2))
+    fid.write("vct       = {} {}".format(" ".join(map(str,ap_bnds)), " ".join(map(str,b_bnds)))
+EOF
+  cdo -s setzaxis,myzaxisinvert.dat s56 s57
+  cdo -s delname,ps,ap_bnds,b_bnds s57 ${ifile} 
+  rm s56 s57 *_bnds.txt myzaxisinvert.dat 
+}
+
 function sea_masked(){
   ifile=$1
   # Assumes .grb extension in the mask file
@@ -370,8 +405,6 @@ function split_soil_mois_grb(){
 #+ MAIN
 #
 timemsg BEGIN
-use netcdf
-use cdo
 
 read iyy imm trash <<< `echo $sformateddate | tr '_T:-' '    '`
 read fyy fmm trash <<< `echo $eformateddate | tr '_T:-' '    '`

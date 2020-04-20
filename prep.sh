@@ -1,7 +1,17 @@
-#!/bin/bash -xe
+#!/bin/bash -x
 # prep.sh
 #
 # Sample script to retrieve ~1 month of data
+
+#print debug if BCTOOL_DEBUG it's defined
+test -n "${BCTOOL_DEBUG}" && set -x
+#-e or -o errexit - exit when a command fails
+#-u or -o nounset - exit when trying to use undefined variable
+#-o pipefail - return the exit code of piped commands that error
+set -euo pipefail
+
+./util/check_requirements.sh || exit 1
+
 model="CanESM2"
 
 case ${model} in
@@ -30,19 +40,20 @@ function setnml(){
   fi
 }
 
-updatenml(){
+function updatenml(){
   update=$1
   nml=${2:-namelist.input}
   grep -v '^#' ${update} | while read key value; do
     setnml "${key}" "${value}" ${nml}
   done
 }
-<<comm
+
 ./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 
-bash util/deploy_WRF_CMake_binaries.sh
-comm
-cd WRF
+WRFDIR=${WRFDIR:-WRF}
+bash util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
+
+cd $WRFDIR
 #
 #  WPS
 #
