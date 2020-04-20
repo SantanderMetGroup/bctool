@@ -90,6 +90,13 @@ function recordOfClosestDate(){
     | awk '$1-'${tdate}'<0 {a+=1} END {print a}'
 }
 
+function dump_coord_bnds(){
+  coord=$1
+  thefile=$2
+  ncdump -v ${coord} ${thefile} \
+    | awk -F'[,;]' '/\}/{a=0} {if(a) printf("%.5f %.5f\n", $1,$2)} /^ '${coord}' =/{a=1}' 
+}
+
 function bctable_header(){
   val=$1
   awk '/\<'${val}'\>/ {print $2}' ${BCTABLE}
@@ -318,10 +325,10 @@ function rename(){
 function set_hybrid_levels(){
   ifile=$1
   cdo -s invertlev ${ifile} s56
-  cdo -s outputf,%10.3f,2 -selname,ap_bnds s56 | awk '{print $2}' > ap_bnds.txt
-  cdo -s outputf,%10.3f,2 -selname,ap_bnds s56 | awk '{print $1}' | tail -1 >> ap_bnds.txt
-  cdo -s outputf,%10.3f,2 -selname,b_bnds  s56 | awk '{print $2}' > b_bnds.txt
-  cdo -s outputf,%10.3f,2 -selname,b_bnds  s56 | awk '{print $1}' | tail -1 >> b_bnds.txt
+  dump_coord_bnds ap_bnds s56 | awk '{print $2}' > ap_bnds.txt 
+  dump_coord_bnds ap_bnds s56 | awk '{print $1}' | tail -1 >> ap_bnds.txt
+  dump_coord_bnds b_bnds  s56 | awk '{print $2}' > b_bnds.txt
+  dump_coord_bnds b_bnds  s56 | awk '{print $1}' | tail -1 >> b_bnds.txt
   # Create hybrid coordinate coefficients for WRF
   paste -d ' ' ap_bnds.txt b_bnds.txt | nl -v0 > ecmwf_coeffs
   # Create a Z-axis description file (myzaxisinvert.dat) to convert nc files to grib ones.                            
