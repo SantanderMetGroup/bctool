@@ -27,7 +27,9 @@ required for a given RCM. In this context, this tool provides:
  * Units transformation
  * Management of alternative sources for mandatory input initial conditions
 
-This is **NOT** a general user tool. It’s main design concept to run by co-located with the actual data on an server with filesystem mounted in the same host and following the ESGF DRS (i.e. typically, an ESGF node)
+This is **NOT** a general user tool. Its main design concept is to run
+co-located by the actual data on a filesystem mounted in the same host and
+following the ESGF DRS (i.e. typically, an ESGF node)
 
 Usage
 -----

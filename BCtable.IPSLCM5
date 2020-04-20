@@ -1,4 +1,4 @@
-data_path /oceano/gmeteo/WORK/zequi/DATASETS/cmip5-cordex4cds-subset/data/cmip5/output1/IPSL/IPSL
+data_path /oceano/gmeteo/WORK/zequi/DATASETS/cmip5-cordex4cds-subset/data/cmip5/output1/IPSL/IPSL-CM5A-MR
 project cmip5
 institute IPSL
 model IPSL-CM5A-MR

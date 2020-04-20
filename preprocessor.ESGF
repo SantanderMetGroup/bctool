@@ -2,12 +2,9 @@
 #
 # Sample preprocessor in shell.
 
-#print debug if BCTOOL_DEBUG it's defined
-test -n "${BCTOOL_DEBUG}" && set -x
-#-e or -o errexit - exit when a command fails
-#-u or -o nounset - exit when trying to use undefined variable
-#-o pipefail - return the exit code of piped commands that error
+# Shell settings
 set -euo pipefail
+test -n "${BCTOOL_DEBUG}" && set -x
 
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
@@ -308,9 +305,14 @@ function rename(){
   ifile=$1
   bname=$2
   newname="$(dirname ${ifile})/${ifile//*_/${bname}_}" # preserve _year.ext
-  mv ${ifile} ${newname}
-  test "${ifile}" = "${land_mask}" && land_mask=${newname}
-  variable=${bname} # Poor programming practice: renames loop variable within a function call
+  current_bname=$(basename ${ifile})
+  if test "${current_bname//_*/}" != "${bname}"; then
+    # It could be that the name was already updated in a previous year processing
+    # This dangerous stuff needs to be re-implemented in the main loop.
+    mv ${ifile} ${newname}
+    test "${ifile}" = "${land_mask}" && land_mask=${newname}
+    variable=${bname} # Poor programming practice: renames loop variable within a function call
+  fi
 }
 
 function set_hybrid_levels(){

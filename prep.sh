@@ -3,12 +3,8 @@
 #
 # Sample script to retrieve ~1 month of data
 
-#print debug if BCTOOL_DEBUG it's defined
+set -uo pipefail
 test -n "${BCTOOL_DEBUG}" && set -x
-#-e or -o errexit - exit when a command fails
-#-u or -o nounset - exit when trying to use undefined variable
-#-o pipefail - return the exit code of piped commands that error
-set -euo pipefail
 
 ./util/check_requirements.sh || exit 1
 
@@ -51,7 +47,7 @@ function updatenml(){
 ./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 
 WRFDIR=${WRFDIR:-WRF}
-bash util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
+./util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
 
 cd $WRFDIR
 #
