@@ -5,7 +5,7 @@
 set -euo pipefail
 test -n "${BCTOOL_DEBUG}" && set -x
 
-commands="wget tar xz wget sed grep cdo ncdump"
+commands="wget tar xz wget sed grep cdo ncdump ncks"
 failed=false
 
 for comm in ${commands}

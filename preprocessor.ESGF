@@ -341,7 +341,7 @@ vctsize   = $((2*${nlevels}+2))
 vct       = $(cat ap_bnds.txt b_bnds.txt)
 EOF
   cdo -s setzaxis,myzaxisinvert.dat s56 s57
-  cdo -s delname,ps,ap_bnds,b_bnds s57 ${ifile} 
+  ncks -O -x -v ps,ap_bnds,b_bnds s57 ${ifile} 
   rm s56 s57 *_bnds.txt myzaxisinvert.dat 
 }
 
