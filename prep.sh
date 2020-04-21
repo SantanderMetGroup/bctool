@@ -44,10 +44,10 @@ function updatenml(){
   done
 }
 
-#./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
+./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 
 WRFDIR=${WRFDIR:-WRF}
-#./util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
+./util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
 
 cd $WRFDIR
 #
