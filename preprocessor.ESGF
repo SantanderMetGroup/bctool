@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # Sample preprocessor in shell.
-
-source util/debug_options.sh
-set -eu
+set -euo pipefail
+BCTOOL_DEBUG=${BCTOOL_DEBUG:-0}
+test "${BCTOOL_DEBUG}" -ne 0 && set -x
 
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
