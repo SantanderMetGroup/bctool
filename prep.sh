@@ -1,10 +1,10 @@
-#!/bin/bash -x
+#!/bin/bash
+#
 # prep.sh
 #
 # Sample script to retrieve ~1 month of data
 
-set -uo pipefail
-test -n "${BCTOOL_DEBUG}" && set -x
+source ./util/debug_options.sh
 
 ./util/check_requirements.sh || exit 1
 
@@ -44,10 +44,10 @@ function updatenml(){
   done
 }
 
-./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
+#./preprocessor.ESGF 2033-12-30_00:00:00 2034-01-04_00:00:00 ${BCTABLE}
 
 WRFDIR=${WRFDIR:-WRF}
-./util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
+#./util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
 
 cd $WRFDIR
 #

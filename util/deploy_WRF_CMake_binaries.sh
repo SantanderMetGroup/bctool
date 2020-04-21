@@ -1,10 +1,7 @@
 #!/bin/bash 
 #
 #
-
-# Shell settings
-set -euo pipefail
-test -n "${BCTOOL_DEBUG}" && set -x
+source util/debug_options.sh
 
 WRFDIR=${1:-WRF}
 

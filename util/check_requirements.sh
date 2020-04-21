@@ -2,8 +2,7 @@
 #
 # Check availability of command dependencies
 
-set -euo pipefail
-test -n "${BCTOOL_DEBUG}" && set -x
+source util/debug_options.sh
 
 commands="wget tar xz wget sed grep cdo ncdump ncks"
 failed=false

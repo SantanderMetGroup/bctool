@@ -1,10 +1,6 @@
 #!/bin/bash 
 #
-#
-
-set -euo pipefail
-test -n "${BCTOOL_DEBUG}" && set -x
-
+# Bash reimplementation of the standard WPS link_grib.csh
 if test -z "$1"; then
    echo " " 
    echo " " 

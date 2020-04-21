@@ -1,9 +1,7 @@
 #!/bin/bash 
 #
 #
-
-set -euo pipefail
-test -n "${BCTOOL_DEBUG}" && set -x
+source util/debug_options.sh
 
 tag=$1
 target="WRF.${tag}"
