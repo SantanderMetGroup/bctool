@@ -1,0 +1,13 @@
+package:
+  name: bctool
+  version: 1.0
+
+source:
+  git_url: git@gitlab.com:scds/bctool.git
+
+requirements:
+  run:
+    - cdo
+
+about:
+  home: http://meteo.unican.es
