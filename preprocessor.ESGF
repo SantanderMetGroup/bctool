@@ -2,9 +2,8 @@
 #
 # Sample preprocessor in shell.
 
-# Shell settings
-set -euo pipefail
-test -n "${BCTOOL_DEBUG}" && set -x
+source util/debug_options.sh
+set -eu
 
 sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
@@ -55,10 +54,10 @@ function dailyTo6hly(){
   cdo -s seltimestep,${nrec} ${ifile} s1
   cdo -s setdate,$(date --utc +%Y-%m-%d --d "`cdo showtimestamp s1` 1day") s1 s2
   cdo -s settime,00:00:00 s2 s1
-  cdo -s mergetime s0 ${ifile} s1 s2
-  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,6hour s2 s1
+  cdo -s mergetime s0 ${ifile} s1 s3
+  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,6hour s3 s1
   cdo -s del29feb s1 ${ofile}
-  rm s0 s1 s2
+  rm s0 s1 s2 s3
 }
 #dailyTo6hly tsl_2033.nc pp.nc # test
 
@@ -247,10 +246,16 @@ function is_land_mask(){
   land_mask="${ifile}"
 }
 
+function only_ic(){
+  ifile=$1 # unused
+  is_only_ic=1
+}
+
 function set_start_time(){
   ifile=$1
-  cdo -s settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} ${ifile} s58
-  mv s58 ${ifile}
+  cdo -s setdate,${sformateddate//_*/} ${ifile} s58
+  cdo -s settime,${sformateddate//*_/} s58 ${ifile}
+  rm s58
 }
 
 function set_grb_code(){
@@ -289,6 +294,13 @@ function day_to_6h(){
   mv s54 ${ifile}
 }
 
+function shift_time(){
+  ifile=$1
+  tshift=$2
+  cdo -s shifttime,${tshift} ${ifile} s83
+  mv s83 ${ifile}
+}
+
 function convert2grb(){
   ifile=$1
   cdo -s -f grb copy ${ifile} s55
@@ -306,6 +318,12 @@ function percent2one(){
   ifile=$1
   cdo -s mulc,0.01 ${ifile} s73
   mv s73 ${ifile}
+}
+
+function celsius2K(){
+  ifile=$1
+  cdo -s addc,273.15 ${ifile} s74
+  mv s74 ${ifile}
 }
 
 function rename(){
@@ -426,6 +444,7 @@ write_static_files
 extdata_path=$(bctable_header data_path)
 echo "Retrieving global data from: ${extdata_path}"
 
+project=$(bctable_header project)
 model=$(bctable_header model)
 experiment=$(bctable_header experiment)
 
@@ -434,13 +453,17 @@ bctable_variables ${BCTABLE} | while read \
 do
   test "${variable:0:1}" = "#" && continue
   timemsg "Processing ${variable}"
-  drsdir="${extdata_path}/${experiment}/${frequency}/${realm}/${table}/${run}/${version}"
+  case "$(echo ${project} | tr '[:upper:]' '[:lower:]')" in
+    cmip5) drsdir="${extdata_path}/${experiment}/${frequency}/${realm}/${table}/${run}/${version}";;
+    cmip6) drsdir="${extdata_path}/${experiment}/${run}/${table}/*/gn/${version}";;
+  esac
   filespec="${variable}_${table}_${model}_${experiment}_${run}*.nc"
+  is_only_ic=0
   for year in $(seq $iyy $fyy)
   do
     timemsg "  YEAR: ${year}"
     apply_filter "${prefilter}|${filter}|${postfilter}"
-    test "${frequency}" = "fx" && break
+    test "${is_only_ic}" -eq 1 && break
   done # year
 done # while read
 #

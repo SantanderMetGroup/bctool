@@ -1,0 +1,4 @@
+num_metgrid_levels 48
+# No psl for the last record due to use of 6-hourly averaged values
+end_day 03
+end_hour 21

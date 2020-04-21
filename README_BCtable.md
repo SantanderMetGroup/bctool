@@ -26,8 +26,8 @@ era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-sftlf    172  1    v20111119  r0i0p0  fx   atmos  fx      is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-orog     129  1    v20111119  r0i0p0  fx   atmos  fx      set_start_time|rename(fx_orog)
+sftlf    172  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
+orog     129  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|set_start_time|rename(fx_orog)
 ta       11   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 ua       33   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 va       34   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
@@ -90,6 +90,9 @@ create a stream of data from the files stored following the ESGF DRS:
 Most filters take an input stream, process it, and send out the result as an
 output stream to be used by the next filter. This is a list of available filters:
 
+**celsius2K**
+:  Unit conversion from Celsius degrees to Kelvin units.
+
 **convert2grb**
 :  Converts the stream to GRIB format
 
@@ -105,9 +108,13 @@ output stream to be used by the next filter. This is a list of available filters
 :  Masks (in practice, crops, due to missing value compression) a given region.
    The default in `preprocessor.ESGF` is the EURO-CORDEX domain.
 
+**only_ic**
+:  Tags a variable as only for initial conditions. This makes the processor
+   to skip files for different years.
+
 **percent2one**
-:  Unit conversion from percent to values between 0 and 1. Common for fractional
-   land masks.
+:  Unit conversion from percentage (0 to 100) to values between 0 and 1. Common
+   for fractional land masks or sea ice cover.
 
 **remapnn**
 :  Regridding to the land mask grid by nearest neighbour interpolation.
@@ -148,6 +155,15 @@ output stream to be used by the next filter. This is a list of available filters
 :  Sets the date and time of the stream to the start date and time of the
    selected period. Usually applied to constant fields (orog, sftlf) or to
    initial conditions (soil variables).
+
+**shift_time(_shift_)**
+:  Shifts the time axis by _shift_. This can be useful when a variable is
+   defined over a time period and the time coordinate does not match the others.
+   An example could be SLP averaged e.g. between 00:00 and 06:00 and stored as
+   time 03:00. If other variables are stored at 00:00, 06:00 and so on, a time
+   shift such as `shift_time(-3hour)` can be applied. This is not an optimal
+   solution since averaged variables should NOT be used as input for an RCM, which
+   expects instantaneous fields.
 
 **split_soil_mois_grb**
 :  This is ad-hoc filter to split the soil moisture information into a single

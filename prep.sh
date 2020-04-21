@@ -8,7 +8,7 @@ source ./util/debug_options.sh
 
 ./util/check_requirements.sh || exit 1
 
-model="CanESM2"
+model="MPIESM12LR"
 
 case ${model} in
   CanESM2)
@@ -18,6 +18,10 @@ case ${model} in
   IPSLCM5)
     BCTABLE="BCtable.IPSLCM5"
     VTABLE="Vtable.IPSLCM5"
+    ;;
+  MPIESM12LR)
+    BCTABLE="BCtable.MPIESM12LR"
+    VTABLE="Vtable.IPSLCM5" # Same vars as IPSLCM5
     ;;
   *) echo "Unknown model: ${model}"; exit ;;
 esac
@@ -103,7 +107,9 @@ ln -sf ../templates/geo_em__EUR-44_WPS410.d01.nc geo_em.d01.nc
 #  real + WRF
 #
 updatenml ../templates/delta/namelist.input.COMMON
-updatenml ../templates/delta/namelist.input.${model}
+nmlmodel="../templates/delta/namelist.input.${model}"
+test -e ${nmlmodel} && updatenml ${nmlmodel}
+
 ./real.exe >& real.out
 
 ulimit -s unlimited
