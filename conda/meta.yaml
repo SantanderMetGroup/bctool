@@ -8,6 +8,7 @@ source:
 requirements:
   run:
     - cdo
+    - nco
 
 about:
   home: http://meteo.unican.es
