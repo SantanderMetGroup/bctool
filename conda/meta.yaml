@@ -1,6 +1,6 @@
 package:
   name: bctool
-  version: 1.0
+  version: "0.1"
 
 source:
   git_url: git@gitlab.com:scds/bctool.git
