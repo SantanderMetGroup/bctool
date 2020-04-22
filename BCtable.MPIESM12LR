@@ -1,7 +1,7 @@
-data_path /oceano/gmeteo/DATA/ESGF/REPLICA/DATA/CMIP6/ScenarioMIP/MPI-M/MPI-ESM1-2-LR
 project CMIP6
 institute MPI-M
 model MPI-ESM1-2-LR
+activity ScenarioMIP
 experiment ssp585
 era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis 
 

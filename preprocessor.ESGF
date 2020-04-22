@@ -23,6 +23,11 @@ function timemsg(){
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
 
+function errormsg(){
+  echo "Error: $*"
+  exit 1
+}
+
 function debugmsg(){
   echo "<debugmsg $(date '+%Y-%m-%d %H:%M:%S')> $*" >&2
 }
@@ -441,12 +446,23 @@ cd ${tmpDir}
 
 write_static_files
 
-extdata_path=$(bctable_header data_path)
-echo "Retrieving global data from: ${extdata_path}"
-
 project=$(bctable_header project)
 model=$(bctable_header model)
 experiment=$(bctable_header experiment)
+
+extdata_path=$(bctable_header data_path)
+if test -z "${extdata_path}"; then
+  timemsg "No data_path in BCtable. Trying to find out where are the data ..."
+  institute=$(bctable_header institute)
+  activity=$(bctable_header activity)
+  product=$(bctable_header product)
+  case "$(echo ${project} | tr '[:upper:]' '[:lower:]')" in
+    cmip5) extdata_path="${ESGF_DRS_BASEDIR}/${project}/${activity}/${product}/${institute}/${model}";;
+    cmip6) extdata_path="${ESGF_DRS_BASEDIR}/${project}/${activity}/${institute}/${model}";;
+  esac
+fi
+test -d "${extdata_path}" || errormsg "Non-existing data path: ${extdata_path}"
+timemsg "Retrieving global data from: ${extdata_path}"
 
 bctable_variables ${BCTABLE} | while read \
   variable gribcode ltype version run frequency realm table filter
