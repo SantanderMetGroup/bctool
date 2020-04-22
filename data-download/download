@@ -1,0 +1,61 @@
+#!/bin/bash
+
+usage() {
+    echo "esgf-download [ -h ] [ -g GLOBUS_DIRECTORY ] -d DESTINATION -l LOGDIR METALINK-FILE"
+}
+
+if ! command -v aria2c &>/dev/null; then
+    echo "aria2c is not installed, exiting..." >&2
+fi
+
+while [[ $# -gt 0 ]]
+do
+    case "$1" in
+    -d | --destination)
+        destination="$2"
+        shift 2
+        ;;
+    -g | --globus)
+        globusdir="$2"
+        shift 2
+        ;;
+    -h | --help)
+        usage
+        exit 1
+        ;;
+    -l | --log)
+        log="$2"
+        shift 2
+        ;;
+    -*)
+        echo "Error: Unknown option: $1" >&2
+        exit 1
+        ;;
+    *)
+        metalink="$1"
+        break
+        ;;
+    esac
+done
+
+if [ -z "$destination" ] || [ -z "$log" ]; then
+    usage
+    exit 1
+fi
+
+if [ ! -d "$log" ]; then
+    echo "$log is not a directory, exiting..."
+    exit 1
+fi
+
+if [ -z "$globusdir" ]; then
+    globusdir=~/.globus
+fi
+
+ARIA2C_SEC_OPTNS="--private-key=$globusdir/certificate-file --certificate=$globusdir/certificate-file --ca-certificate=$globusdir/certificate-file"
+ARIA2C_SEC_OPTNS="$ARIA2C_SEC_OPTNS --check-certificate=false"
+ARIA2C_LOG_OPTNS="--log-level=info --summary-interval=0 --console-log-level=warn"
+ARIA2C_FIL_OPTNS="--allow-overwrite=true --continue --file-allocation=none --remote-time=true" 
+ARIA2C_FIL_OPTNS="$ARIA2C_FIL_OPTNS --auto-file-renaming=false --conditional-get=true --check-integrity=true"
+
+aria2c --rpc-listen-all --enable-rpc --dir="$destination" $ARIA2C_FIL_OPTNS --log=log/aria2c_$(date +%Y%m%dT%H%M%M.%N).log $ARIA2C_LOG_OPTNS $ARIA2C_SEC_OPTNS -M $metalink
