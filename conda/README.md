@@ -3,5 +3,5 @@
 Usage:
 
 ```bash
-conda build -c conda-forge .
+conda build -c conda-forge -c bioconda .
 ```

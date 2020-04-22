@@ -9,6 +9,8 @@ requirements:
   run:
     - cdo
     - nco
+    - jq
+    - aria2
 
 about:
   home: http://meteo.unican.es
