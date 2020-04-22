@@ -7,8 +7,8 @@ product output1
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-sftlf   172  1     v20120407  r0i0p0   fx  atmos  fx      is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-orog    129  1     v20120407  r0i0p0   fx  atmos  fx      set_start_time|rename(fx_orog)
+sftlf   172  1     v20120407  r0i0p0   fx  atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
+orog    129  1     v20120407  r0i0p0   fx  atmos  fx      only_ic|set_start_time|rename(fx_orog)
 ta      11   109   v20120410  r1i1p1   6hr atmos  6hrLev  set_hybrid_levels
 ua      33   109   v20120410  r1i1p1   6hr atmos  6hrLev  set_hybrid_levels
 va      34   109   v20120410  r1i1p1   6hr atmos  6hrLev  set_hybrid_levels

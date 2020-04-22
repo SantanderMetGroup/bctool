@@ -74,10 +74,10 @@ function timeRangeTo6hly(){
   cdo -s seltimestep,${nrec} ${ifile} s1
   cdo -s setdate,${etstamp} s1 s2
   cdo -s settime,$(echo ${etstamp} | awk -FT '{print $2}') s2 s1
-  cdo -s mergetime s0 s1 s2
-  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,6hour s2 s1
+  cdo -s mergetime s0 s1 s3
+  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,6hour s3 s1
   cdo -s del29feb s1 ${ofile} # need better calendar handling (this is for noleap)
-  rm s0 s1 s2
+  rm s0 s1 s2 s3
 }
 #timeRangeTo6hly tsl_2033.nc pp.nc 2033-12-24T00:00:00 2034-01-04T00:00:00 # test
 
