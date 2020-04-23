@@ -31,6 +31,15 @@ This is **NOT** a general user tool. Its main design concept is to run
 co-located by the actual data on a filesystem mounted in the same host and
 following the ESGF DRS (i.e. typically, an ESGF node)
 
+Installation
+------------
+
+Just clone the repository or install from conda with the following command:
+
+```bash
+conda install -c conda-forge -c bioconda -c santandermetgroup bctool
+```
+
 Usage
 -----
 
