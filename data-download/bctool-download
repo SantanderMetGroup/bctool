@@ -2,7 +2,7 @@
 
 usage() {
     echo "bctool-download [ -h ] [ -g GLOBUS_DIRECTORY ] -d DESTINATION -l LOGDIR METALINK-FILE" >&2
-    echo "  If installed with conda, metalink file can be found at $(CONDA_PREFIX)/share/bctool/data-download" >&2
+    echo '  If installed with conda, metalink file can be found at CONDA_PREFIX/share/bctool/data-download' >&2
 }
 
 if ! command -v aria2c &>/dev/null; then
