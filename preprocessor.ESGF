@@ -348,10 +348,10 @@ function rename(){
 function set_hybrid_levels(){
   ifile=$1
   cdo -s invertlev ${ifile} s56
-  dump_coord_bnds ap_bnds s56 | awk '{print $2}' > ap_bnds.txt 
-  dump_coord_bnds ap_bnds s56 | awk '{print $1}' | tail -1 >> ap_bnds.txt
-  dump_coord_bnds b_bnds  s56 | awk '{print $2}' > b_bnds.txt
-  dump_coord_bnds b_bnds  s56 | awk '{print $1}' | tail -1 >> b_bnds.txt
+  dump_coord_bnds ap_bnds s56 | awk '{print $1}' > ap_bnds.txt 
+  dump_coord_bnds ap_bnds s56 | awk '{print $2}' | tail -1 >> ap_bnds.txt
+  dump_coord_bnds b_bnds  s56 | awk '{print $1}' > b_bnds.txt
+  dump_coord_bnds b_bnds  s56 | awk '{print $2}' | tail -1 >> b_bnds.txt
   # Create hybrid coordinate coefficients for WRF
   paste -d ' ' ap_bnds.txt b_bnds.txt | nl -v0 > ecmwf_coeffs
   # Create a Z-axis description file (myzaxisinvert.dat) to convert nc files to grib ones.                            
@@ -364,7 +364,7 @@ vctsize   = $((2*${nlevels}+2))
 vct       = $(cat ap_bnds.txt b_bnds.txt)
 EOF
   cdo -s setzaxis,myzaxisinvert.dat s56 s57
-  ncks -O -x -v ps,ap_bnds,b_bnds s57 ${ifile} 
+  ncks -O -C -x -v ps,ap_bnds,b_bnds s57 ${ifile} 
   rm s56 s57 *_bnds.txt myzaxisinvert.dat 
 }
 
@@ -430,7 +430,7 @@ function split_soil_mois_grb(){
   cdo -s mulc,0.01     soilm01.grb soilm01_frac_${year}.grb
   cdo -s mulc,0.0033   soilm02.grb soilm02_frac_${year}.grb
   cdo -s mulc,0.000274 soilm03.grb soilm03_frac_${year}.grb
-  rm soilm0[123].grb ${ifile}
+  rm soilm0[123].grb ${ifile} soilm*.nc
 }
 
 #
