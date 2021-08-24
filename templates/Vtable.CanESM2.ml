@@ -5,11 +5,11 @@ Param| Type |Level1|Level2| Name     |  Units   | Description                   
   33 | 109  |   *  |      | UU       | m s-1    | U                                        |
   34 | 109  |   *  |      | VV       | m s-1    | V                                        |
   52 | 109  |   *  |      | SPECHUMD | kg kg-1  | Specific Humidity                        |
-  11 | 105  |   2  |      | TT       | K        | Temperature                              | At 2 m
-  52 | 105  |   2  |      | SPECHUMD | kg kg-1  |                                          | At 2 m
-     | 105  |   2  |      | RH       | %        | Relative Humidity at 2 m                 | At 2 m
-  33 | 105  |  10  |      | UU       | m s-1    | U                                        | At 10 m
-  34 | 105  |  10  |      | VV       | m s-1    | V                                        | At 10 m
+  11 | 105  |   0  |      | TT       | K        | Temperature                              | At 2 m
+  52 | 105  |   0  |      | SPECHUMD | kg kg-1  |                                          | At 2 m
+     | 105  |   0  |      | RH       | %        | Relative Humidity at 2 m                 | At 2 m
+  33 | 105  |   0  |      | UU       | m s-1    | U                                        | At 10 m
+  34 | 105  |   0  |      | VV       | m s-1    | V                                        | At 10 m
  172 |  1   |   0  |      | LANDSEA  | 0/1 Flag | Land/Sea flag                            |
  129 |  1   |   0  |      | SOILHGT  | m        | Terrain field of source analysis         |
   31 |  1   |   0  |      | SEAICE   | 0/1 Flag | Sea-Ice-Flag                             |
