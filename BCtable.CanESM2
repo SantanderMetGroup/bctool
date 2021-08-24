@@ -5,23 +5,23 @@ model CanESM2
 experiment rcp45
 product output1
 
-abbr    grib ltype version   ensemble freq realm  table   filter
-------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-sftlf   172  1     v20120407  r0i0p0   fx  atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-orog    129  1     v20120407  r0i0p0   fx  atmos  fx      only_ic|set_start_time|rename(fx_orog)
-ta      11   109   v20120410  r1i1p1   6hr atmos  6hrLev  set_hybrid_levels
-ua      33   109   v20120410  r1i1p1   6hr atmos  6hrLev  set_hybrid_levels
-va      34   109   v20120410  r1i1p1   6hr atmos  6hrLev  set_hybrid_levels
-hus     52   109   v20120410  r1i1p1   6hr atmos  6hrLev  set_hybrid_levels
-ps      1    1     v20120410  r1i1p1   6hr atmos  6hrLev 
-psl     2    1     v20120410  r1i1p1   6hr atmos  6hrPlev 
-tsl     139  112   v20120407  r1i1p1   mon land   Lmon    BEGIN|only_closest_to_sdate|maskregion|split_soil_temp_grb|END
-mrlsl   39   112   v20120407  r1i1p1   mon land   Lmon    BEGIN|only_closest_to_sdate|maskregion|split_soil_mois_grb|END
-tslsi   11   1     v20120618  r1i1p1   day land    day    day_to_6h
-tslsi   37   1     v20120618  r1i1p1   day land    day    sea_masked|day_to_6h|rename(sst)
-sic     31   1     v20120618  r1i1p1   day seaIce  day    sea_masked|day_to_6h
-# huss    52   105   v20120410  r1i1p1   day atmos   day   
-# tas     11   105   v20120410  r1i1p1   day atmos   day   
-# uas     33   105   v20120410  r1i1p1   day atmos   day   
-# vas     34   105   v20120410  r1i1p1   day atmos   day   
-# prsn    141  1     v20120410  r1i1p1   day atmos   day   
+abbr    grib ltype version   ensemble freq realm   table   filter
+------- ---- ----- --------- -------- ---- ------  ------- ----------------- 
+sftlf   172  1     *  	     r0i0p0   fx  atmos   fx      only_ic|is_land_mask|percent2one|set_start_time|fixed_to_6h|rename(fx_sftlf)
+orog    129  1     *  	     r0i0p0   fx  atmos   fx      only_ic|set_start_time|fixed_to_6h|rename(fx_orog)
+ta      11   109   *         r1i1p1   6hr atmos   6hrLev  set_hybrid_levels
+ua      33   109   *  	     r1i1p1   6hr atmos   6hrLev  set_hybrid_levels
+va      34   109   *         r1i1p1   6hr atmos   6hrLev  set_hybrid_levels
+hus     52   109   *         r1i1p1   6hr atmos   6hrLev  set_hybrid_levels
+ps      1    1     *         r1i1p1   6hr atmos   6hrLev 
+psl     2    1     *         r1i1p1   6hr atmos   6hrPlev 
+tsl     139  112   *         r1i1p1   mon land    Lmon    BEGIN|only_closest_to_sdate|maskregion|fixed_to_6h|split_soil_temp_grb|END
+mrlsl   39   112   *         r1i1p1   mon land    Lmon    BEGIN|only_closest_to_sdate|maskregion|fixed_to_6h|split_soil_mois_grb|END
+tslsi   11   1     *         r1i1p1   day land    day     day_to_6h
+tos	37   1     *         r1i1p1   day ocean   day     remapnn|sea_masked|day_to_6h
+sic     31   1     *         r1i1p1   day seaIce  day     sea_masked|day_to_6h
+huss    52   105   *         r1i1p1   day atmos   day     day_to_6h
+tas     11   105   *         r1i1p1   day atmos   day     day_to_6h
+uas     33   105   *         r1i1p1   day atmos   day     day_to_6h
+vas     34   105   *         r1i1p1   day atmos   day     day_to_6h
+prsn    141  1     *         r1i1p1   day atmos   day     day_to_6h
