@@ -1,24 +1,29 @@
 #!/bin/bash
-#
-# Sample preprocessor in shell.
+# Sample preprocessor in shell
+
+#--------------------------------------------------------------------------
+#+ Settings
+#--------------------------------------------------------------------------
 set -euo pipefail
 BCTOOL_DEBUG=${BCTOOL_DEBUG:-0}
 test "${BCTOOL_DEBUG}" -ne 0 && set -x
 
-sformateddate=$1     # initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
+# Read arguments
+sformateddate=$1     # Initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
 eformateddate=$2     # end date to process
 BCTABLE=$3           # BCtable file
+
 # Set a full path (if relative)
 test "${BCTABLE}" = ${BCTABLE#/} && BCTABLE=`pwd`/${BCTABLE}
-#
-#+ Settings
-#
+
+# Set default filters to be applied, before and after filter given in the BCTABLE
 wrfpostfilter="convert2grb|set_grb_code|set_grb_ltype|set_extension(grb)"
 prefilter="time_slice"
 postfilter="maskregion|${wrfpostfilter}"
-#
-#+ Functions
-#
+
+#--------------------------------------------------------------------------
+#Functions
+#--------------------------------------------------------------------------
 function timemsg(){
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
 }
@@ -30,6 +35,15 @@ function errormsg(){
 
 function debugmsg(){
   echo "<debugmsg $(date '+%Y-%m-%d %H:%M:%S')> $*" >&2
+}
+
+function bctable_header(){
+  val=$1
+  awk '/\<'${val}'\>/ {print $2}' ${BCTABLE}
+}
+
+function bctable_variables(){
+  awk '{if (a) print; if (substr($1,1,3)=="---") a=1}' ${BCTABLE}
 }
 
 function findfile(){
@@ -50,110 +64,11 @@ function findfile(){
     done
 }
 
-function dailyTo6hly(){
-  ifile=$1
-  ofile=$2
-  nrec=$(cdo -s ntime ${ifile})
-  cdo -s seltimestep,1 ${ifile} s1
-  cdo -s settime,00:00:00 s1 s0
-  cdo -s seltimestep,${nrec} ${ifile} s1
-  cdo -s setdate,$(date --utc +%Y-%m-%d --d "`cdo showtimestamp s1` 1day") s1 s2
-  cdo -s settime,00:00:00 s2 s1
-  cdo -s mergetime s0 ${ifile} s1 s3
-  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,6hour s3 s1
-  cdo -s del29feb s1 ${ofile}
-  rm s0 s1 s2 s3
-}
-#dailyTo6hly tsl_2033.nc pp.nc # test
-
-function timeRangeTo6hly(){
-  ifile=$1
-  ofile=$2
-  ststamp=$3
-  etstamp=$4
-  nrec=$(cdo -s ntime ${ifile})
-  test ${nrec} -eq 0 && nrec=1
-  cdo -s seltimestep,1 ${ifile} s1
-  cdo -s setdate,${ststamp} s1 s2
-  cdo -s settime,$(echo ${ststamp} | awk -FT '{print $2}') s2 s0
-  cdo -s seltimestep,${nrec} ${ifile} s1
-  cdo -s setdate,${etstamp} s1 s2
-  cdo -s settime,$(echo ${etstamp} | awk -FT '{print $2}') s2 s1
-  cdo -s mergetime s0 s1 s3
-  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,6hour s3 s1
-  cdo -s del29feb s1 ${ofile} # need better calendar handling (this is for noleap)
-  rm s0 s1 s2 s3
-}
-#timeRangeTo6hly tsl_2033.nc pp.nc 2033-12-24T00:00:00 2034-01-04T00:00:00 # test
-
-function recordOfClosestDate(){
-  ifile=$1
-  targetdate=$2
-  tdate=$(date +%s -d ${targetdate})
-  cdo showtimestamp ${ifile} | tr ' ' '\n' | grep -v '^$' | while read datestr; do date +%s -d $datestr; done \
-    | awk '$1-'${tdate}'<0 {a+=1} END {print a}'
-}
-
-function dump_coord_bnds(){
-  coord=$1
-  thefile=$2
-  ncdump -v ${coord} ${thefile} \
-    | awk -F'[,;]' '/\}/{a=0} {if(a) printf("%.5f %.5f\n", $1,$2)} /^ '${coord}' =/{a=1}' 
-}
-
-function bctable_header(){
-  val=$1
-  awk '/\<'${val}'\>/ {print $2}' ${BCTABLE}
-}
-
-function bctable_variables(){
-  awk '{if (a) print; if (substr($1,1,3)=="---") a=1}' ${BCTABLE}
-}
-
-function write_static_files(){
-cat << EOF > myzaxis2m.dat
-zaxistype = height
-size      = 1 
-levels    = 2
-EOF
-cat << EOF > myzaxis10m.dat
-zaxistype = height
-size      = 1 
-levels    = 10
-EOF
-cat << EOF > myzaxis0_10.dat      
-zaxistype = depth_below_land 
-size      = 1
-name      = depth
-longname  = depth_below_land
-units     = cm
-lbounds    = 0   
-ubounds    = 10
-EOF
-cat << EOF > myzaxis10_40.dat      
-zaxistype = depth_below_land 
-size      = 1
-name      = depth
-longname  = depth_below_land
-units     = cm
-lbounds    = 10
-ubounds    = 40
-EOF
-cat << EOF > myzaxis40_255.dat      
-zaxistype = depth_below_land 
-size      = 1
-name      = depth
-longname  = depth_below_land
-units     = cm
-lbounds    = 40   
-ubounds    = 255
-EOF
-cat << EOF > region.dat      
--40.0 10.0
--80.0 90.0
-100.0 90.0
-60.0 10.0
-EOF
+function copy(){
+  orig=$1
+  dest=$2
+  cp ${orig} ${dest}
+  chmod ug+w ${dest}
 }
 
 function apply_filter(){
@@ -172,16 +87,78 @@ function apply_filter(){
   done
 }
 
-function copy(){
-  orig=$1
-  dest=$2
-  cp ${orig} ${dest}
-  chmod ug+w ${dest}
+
+function dailyToNhly(){
+  ifile=$1
+  ofile=$2
+  nrec=$(cdo -s ntime ${ifile})
+  cdo -s seltimestep,1 ${ifile} s1
+  cdo -s settime,00:00:00 s1 s0
+  cdo -s seltimestep,${nrec} ${ifile} s1
+  cdo -s setdate,$(date --utc +%Y-%m-%d --d "`cdo showtimestamp s1` 1day") s1 s2
+  cdo -s settime,00:00:00 s2 s1
+  cdo -s mergetime s0 ${ifile} s1 s3
+  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,${interval} s3  ${ofile} #s1
+  rm s0 s1 s2 s3
 }
-#
+#To test: dailyToNhly tsl_2033.nc pp.nc
+
+function timeRangeToNhly(){
+  ifile=$1
+  ofile=$2
+  ststamp=$3
+  etstamp=$4
+  nrec=$(cdo -s ntime ${ifile})
+  test ${nrec} -eq 0 && nrec=1
+  cdo -s seltimestep,1 ${ifile} s1
+  cdo -s setdate,${ststamp} s1 s2
+  cdo -s settime,$(echo ${ststamp} | awk -FT '{print $2}') s2 s0
+  cdo -s seltimestep,${nrec} ${ifile} s1
+  cdo -s setdate,${etstamp} s1 s2
+  cdo -s settime,$(echo ${etstamp} | awk -FT '{print $2}') s2 s1
+  cdo -s mergetime s0 s1 s3
+  cdo -s inttime,$(cdo showdate s0 | tr -d ' '),00:00:00,${interval} s3  ${ofile} #s1
+  rm s0 s1 s2 s3
+}
+#To test: timeRangeToNhly tsl_2033.nc pp.nc 2033-12-24T00:00:00 2034-01-04T00:00:00
+
+function recordOfClosestDate(){
+  ifile=$1
+  targetdate=$2
+  tdate=$(date +%s -d ${targetdate})
+  cdo showtimestamp ${ifile} | tr ' ' '\n' | grep -v '^$' | while read datestr; do date +%s -d $datestr; done \
+    | awk '$1-'${tdate}'<0 {a+=1} END {print a}'
+}
+
+function dump_coord_bnds(){
+  coord=$1
+  thefile=$2
+  ncdump -v ${coord} ${thefile} \
+    | awk -F'[,;]' '/\}/{a=0} {if(a) printf("%.5f %.5f\n", $1,$2)} /^ '${coord}' =/{a=1}' 
+}
+
+function write_static_files(){
+cat << EOF > myzaxis2m.dat
+zaxistype = height
+size      = 1 
+levels    = 2
+EOF
+cat << EOF > myzaxis10m.dat
+zaxistype = height
+size      = 1 
+levels    = 10
+EOF
+cat << EOF > region.dat      
+-40.0 10.0
+-80.0 90.0
+100.0 90.0
+60.0 10.0
+EOF
+}
+
+#--------------------------------------------------------------------------
 #+ Filter functions
-#
-#
+#--------------------------------------------------------------------------
 # PIPE-START FUNCTIONS
 # "Input" file in these functions is the output file
 #
@@ -202,7 +179,13 @@ function time_slice(){
     ifile=$(findfile ${filespec} ${year})
     cdo seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} s84
     cdo selyear,${year} s84 ${ofile}
-    rm s84
+    calendar=$(cdo -sinfo ${ofile} | grep Calendar | awk '{print $10}')
+    if [ $calendar == "standard" ] && [ $noleap == "true" ]; then
+	echo "Removing the leap day"
+    	cdo -s del29feb ${ofile} s84; mv s84 ${ofile}	
+    else
+	echo "Removing leap day not requested!" ; rm s84
+    fi
   fi
 }
 
@@ -218,7 +201,7 @@ function use_era_interim(){
   copy ${ifile} ${ofile}
 }
 
-#
+
 # PIPE FUNCTIONS
 # Input file is overwritten by the output
 #
@@ -256,69 +239,6 @@ function only_ic(){
   is_only_ic=1
 }
 
-function set_start_time(){
-  ifile=$1
-  cdo -s setdate,${sformateddate//_*/} ${ifile} s58
-  cdo -s settime,${sformateddate//*_/} s58 ${ifile}
-  rm s58
-}
-
-function set_grb_code(){
-  ifile=$1
-  cdo -s chparam,1,${gribcode} ${ifile} s51
-  mv s51 ${ifile}
-}
-
-function set_grb_ltype(){
-  ifile=$1
-  cdo -s setltype,${ltype} ${ifile} s52
-  mv s52 ${ifile}
-}
-
-function ecc_set_grb_code(){
-  ifile=$1
-  grib_set -s indicatorOfParameter=${gribcode} ${ifile} s51
-  mv s51 ${ifile}
-}
-
-function ecc_set_grb_ltype(){
-  ifile=$1
-  grib_set -s indicatorOfTypeOfLevel=${ltype} ${ifile} s52
-  mv s52 ${ifile}
-}
-
-function fixed_to_6h(){
-  ifile=$1
-  timeRangeTo6hly ${ifile} s53 ${sformateddate/_/T} ${eformateddate/_/T}
-  mv s53 ${ifile}
-}
-
-function day_to_6h(){
-  ifile=$1
-  dailyTo6hly ${ifile} s54
-  mv s54 ${ifile}
-}
-
-function shift_time(){
-  ifile=$1
-  tshift=$2
-  cdo -s shifttime,${tshift} ${ifile} s83
-  mv s83 ${ifile}
-}
-
-function convert2grb(){
-  ifile=$1
-  cdo -s -f grb copy ${ifile} s55
-  mv s55 ${ifile}
-}
-
-function set_extension(){
-  ifile=$1
-  extension=$2
-  test "${ifile}" = "${land_mask}" && land_mask=${ifile}.${extension}
-  mv ${ifile} ${ifile}.${extension}
-}
-
 function percent2one(){
   ifile=$1
   cdo -s mulc,0.01 ${ifile} s73
@@ -331,18 +251,30 @@ function celsius2K(){
   mv s74 ${ifile}
 }
 
-function rename(){
+function set_start_time(){
   ifile=$1
-  bname=$2
-  newname="$(dirname ${ifile})/${ifile//*_/${bname}_}" # preserve _year.ext
-  current_bname=$(basename ${ifile})
-  if test "${current_bname//_*/}" != "${bname}"; then
-    # It could be that the name was already updated in a previous year processing
-    # This dangerous stuff needs to be re-implemented in the main loop.
-    mv ${ifile} ${newname}
-    test "${ifile}" = "${land_mask}" && land_mask=${newname}
-    variable=${bname} # Poor programming practice: renames loop variable within a function call
-  fi
+  cdo -s setdate,${sformateddate//_*/} ${ifile} s58
+  cdo -s settime,${sformateddate//*_/} s58 ${ifile}
+  rm s58
+}
+
+function fixed_to_Nh(){
+  ifile=$1
+  timeRangeToNhly ${ifile} s53 ${sformateddate/_/T} ${eformateddate/_/T}
+  mv s53 ${ifile}
+}
+
+function day_to_Nh(){
+  ifile=$1
+  dailyToNhly ${ifile} s54
+  mv s54 ${ifile}
+}
+
+function shift_time(){
+  ifile=$1
+  tshift=$2
+  cdo -s shifttime,${tshift} ${ifile} s83
+  mv s83 ${ifile}
 }
 
 function set_hybrid_levels(){
@@ -396,13 +328,6 @@ EOF
   rm s56 s57 *_bnds.txt myzaxisinvert.dat 
 }
 
-function sea_masked(){
-  ifile=$1
-  # Assumes .grb extension in the mask file
-  cdo -s ifnotthen ${land_mask} ${ifile} s58
-  mv s58 ${ifile} 
-}
-
 function remapnn(){
   ifile=$1
   # Fill missing value areas since this tool is usually applied before a masking operation
@@ -411,31 +336,135 @@ function remapnn(){
   mv s60 ${ifile} 
 }
 
+function sea_masked(){
+  ifile=$1
+  # Assumes .grb extension in the mask file
+  cdo -s ifnotthen ${land_mask} ${ifile} s58
+  mv s58 ${ifile} 
+}
+
+function rename(){
+  ifile=$1
+  bname=$2
+  newname="$(dirname ${ifile})/${ifile//*_/${bname}_}" # preserve _year.ext
+  current_bname=$(basename ${ifile})
+  if test "${current_bname//_*/}" != "${bname}"; then
+    # It could be that the name was already updated in a previous year processing
+    # This dangerous stuff needs to be re-implemented in the main loop.
+    mv ${ifile} ${newname}
+    test "${ifile}" = "${land_mask}" && land_mask=${newname}
+    variable=${bname} # Poor programming practice: renames loop variable within a function call
+  fi
+}
+
 function split_soil_temp_grb(){
   ifile=$1
-  cdo -s splitlevel ${ifile} soilt  
-  cdo -s -f grb setzaxis,myzaxis0_10.dat   -setltype,112 -chparam,-1,139 soilt000.05.nc soilt01_${year}.grb
-  cdo -s -f grb setzaxis,myzaxis10_40.dat  -setltype,112 -chparam,-1,170 soilt000.25.nc soilt02_${year}.grb
-  cdo -s -f grb setzaxis,myzaxis40_255.dat -setltype,112 -chparam,-1,183 soilt02.225.nc soilt03_${year}.grb
-  rm soilt0*.nc ${ifile}
+  ndepth=$(ncdump -h ${ifile} | grep depth | awk '{print $3}' | head -1)
+  grib_params=( 139 170 183 236 ) 	# grib codes from ECMWF parameter database (https://apps.ecmwf.int/codes/grib/param-db); for up to 4 layers 
+  depths=$(cdo -s showlevel ${ifile})
+  cdo -s splitlevel ${ifile} soilt
+  # Calculate boundaries of the layers
+  lower_bnd=0
+  for nd in `seq $ndepth`; do
+    depth=`echo $depths | awk -v var=$nd '{print $var}'` 
+    upper_bnd=`awk "BEGIN {x=$lower_bnd; y=$depth; z=(2*y-x); print z}"`
+    lower_cm=`awk "BEGIN {x=$lower_bnd; z=(100*x); print z}"`
+    upper_cm=`awk "BEGIN {x=$upper_bnd; z=(100*x); print z}"`
+    delta_cm=`awk "BEGIN {x=$upper_cm; y=$lower_cm; z=1/(10*(x-y)); print z}"`
+cat << EOF > myzaxis${lower_cm}_${upper_cm}.dat      
+zaxistype = depth_below_land 
+size      = 1
+name      = depth
+longname  = depth_below_land
+units     = cm
+lbounds    = $lower_cm
+ubounds    = $upper_cm
+EOF
+    lower_bnd=$upper_bnd
+    grib_param=${grib_params[`expr $nd-1`]}
+    # Convert to grib format
+    cdo -s -f grb setzaxis,myzaxis${lower_cm}_${upper_cm}.dat -setltype,${ltype} -chparam,-1,$grib_param soilt*$depth.nc soilt0${nd}_${year}.grb
+  done  
+  rm ${ifile} myzaxis${lower_cm}_${upper_cm}.dat soilt*.nc
 }
 
 function split_soil_mois_grb(){
-  # This example is for CanESM2 (depths and unit conversion surely differ for other models)
+  # NOTE: Depth variable inicating the layer depth  (middle) should exist in the file
   ifile=$1
-  cdo -s splitlevel ${ifile} soilm  
-  cdo -s -f grb setzaxis,myzaxis0_10.dat   -setltype,112 -chparam,-1,39 soilm000.05.nc soilm01.grb
-  cdo -s -f grb setzaxis,myzaxis10_40.dat  -setltype,112 -chparam,-1,40 soilm000.25.nc soilm02.grb
-  cdo -s -f grb setzaxis,myzaxis40_255.dat -setltype,112 -chparam,-1,41 soilm02.225.nc soilm03.grb
-  cdo -s mulc,0.01     soilm01.grb soilm01_frac_${year}.grb
-  cdo -s mulc,0.0033   soilm02.grb soilm02_frac_${year}.grb
-  cdo -s mulc,0.000274 soilm03.grb soilm03_frac_${year}.grb
-  rm soilm0[123].grb ${ifile} soilm*.nc
+  ndepth=$(ncdump -h ${ifile} | grep depth | awk '{print $3}' | head -1)
+  depths=$(cdo -s showlevel ${ifile})
+  cdo -s splitlevel ${ifile} soilm 
+  # Calculate boundaries of the layers
+  lower_bnd=0
+  for nd in `seq $ndepth`; do
+    depth=`echo $depths | awk -v var=$nd '{print $var}'` 
+    upper_bnd=`awk "BEGIN {x=$lower_bnd; y=$depth; z=(2*y-x); print z}"`
+    lower_cm=`awk "BEGIN {x=$lower_bnd; z=(100*x); print z}"`
+    upper_cm=`awk "BEGIN {x=$upper_bnd; z=(100*x); print z}"`
+    delta_cm=`awk "BEGIN {x=$upper_cm; y=$lower_cm; z=1/(10*(x-y)); print z}"`
+cat << EOF > myzaxis${lower_cm}_${upper_cm}.dat      
+zaxistype = depth_below_land 
+size      = 1
+name      = depth
+longname  = depth_below_land
+units     = cm
+lbounds    = $lower_cm
+ubounds    = $upper_cm
+EOF
+    lower_bnd=$upper_bnd
+    grib_param=`expr 38 + $nd`
+    # Convert to grib format
+    cdo -s -f grb setzaxis,myzaxis${lower_cm}_${upper_cm}.dat -setltype,${ltype} -chparam,-1,$grib_param soilm*$depth.nc soilm0${nd}_${year}.grb
+    # Convert to m3/m3
+    cdo -s mulc,${delta_cm} soilm0${nd}_${year}.grb tmp.grb
+    mv tmp.grb soilm0${nd}_${year}.grb
+  done   
+  rm ${ifile} myzaxis${lower_cm}_${upper_cm}.dat soilm*.nc
 }
 
-#
+# set grid codes with ecCodes package developed by ECMWF
+function ecc_set_grb_code(){
+  ifile=$1
+  grib_set -s indicatorOfParameter=${gribcode} ${ifile} s51
+  mv s51 ${ifile}
+}
+
+# set grid level type with ecCodes package developed by ECMWF
+function ecc_set_grb_ltype(){
+  ifile=$1
+  grib_set -s indicatorOfTypeOfLevel=${ltype} ${ifile} s52
+  mv s52 ${ifile}
+}
+
+function convert2grb(){
+  ifile=$1
+  cdo -s -f grb copy ${ifile} s55
+  mv s55 ${ifile}
+}
+
+function set_grb_code(){
+  ifile=$1
+  cdo -s chparam,1,${gribcode} ${ifile} s51
+  mv s51 ${ifile}
+}
+
+function set_grb_ltype(){
+  ifile=$1
+  cdo -s setltype,${ltype} ${ifile} s52
+  mv s52 ${ifile}
+}
+
+function set_extension(){
+  ifile=$1
+  extension=$2
+  test "${ifile}" = "${land_mask}" && land_mask=${ifile}.${extension}
+  mv ${ifile} ${ifile}.${extension}
+}
+
+
+#--------------------------------------------------------------------------
 #+ MAIN
-#
+#--------------------------------------------------------------------------
 timemsg BEGIN
 
 read iyy imm trash <<< `echo $sformateddate | tr '_T:-' '    '`
@@ -449,8 +478,9 @@ write_static_files
 project=$(bctable_header project)
 model=$(bctable_header model)
 experiment=$(bctable_header experiment)
-
 extdata_path=$(bctable_header data_path)
+interval=$(bctable_header interval)
+
 if test -z "${extdata_path}"; then
   timemsg "No data_path in BCtable. Trying to find out where are the data ..."
   institute=$(bctable_header institute)
@@ -482,9 +512,7 @@ do
     test "${is_only_ic}" -eq 1 && break
   done # year
 done # while read
-#
-# Deleting dat files
-#
-rm *.dat
 
+# Deleting dat files
+rm ${tmpDir}/*.dat
 timemsg END
