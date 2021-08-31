@@ -23,27 +23,28 @@ model IPSL-CM5A-MR
 experiment rcp85
 product output1
 era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis
+interval 3hour
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-sftlf    172  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-orog     129  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|set_start_time|rename(fx_orog)
+sftlf    172  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|fixed_to_Nh|rename(sftlf)
+orog     129  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|set_start_time|fixed_to_Nh|rename(orog)
 ta       11   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 ua       33   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 va       34   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 hus      52   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 ps       1    1    v20111119  r1i1p1  6hr  atmos  6hrLev  
 psl      2    1    v20111119  r1i1p1  6hr  atmos  6hrPlev 
-sic      31   1    v20111119  r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_6h
-tos      37   1    v20111119  r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_6h
-soil139  139  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil170  170  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil183  183  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil236  236  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil39   39   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+sic      31   1    v20111119  r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_Nh
+tos      37   1    v20111119  r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_Nh
+soil139  139  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil170  170  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil183  183  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil236  236  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil39   39   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
 ```
 Lines can be commented out by using a `#` symbol.
 
@@ -96,9 +97,12 @@ output stream to be used by the next filter. This is a list of available filters
 **convert2grb**
 :  Converts the stream to GRIB format
 
-**day_to_6h**
-:  Temporal interpolation in time from daily to 6-hourly frequency. Recommended
+**day_to_Nh**
+:  Temporal interpolation in time from daily to N-hourly frequency. Recommended
    only for slow-varying fields (SST, sea ice, ...).
+
+**fixed_to_Nh**
+:  Temporal interpolation fixed files in time N-hourly frequency.
 
 **is_land_mask**
 :  This filter flags the current variable as the land mask. This sets this
