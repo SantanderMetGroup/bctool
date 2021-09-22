@@ -4,9 +4,6 @@
 #
 # Sample script to retrieve ~1 month of data
 
-#use cdo
-#use nco
-source activate NCLtoPY
 source ./util/debug_options.sh
 
 ./util/check_requirements.sh || exit 1
