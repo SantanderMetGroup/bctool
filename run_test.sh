@@ -4,6 +4,7 @@
 #
 # Sample script to retrieve ~1 month of data
 
+#set -x
 #use cdo
 #use nco
 source activate NCLtoPY
@@ -11,9 +12,9 @@ source ./util/debug_options.sh
 
 ./util/check_requirements.sh || exit 1
 
-model="CanESM2"
-sformateddate='2033-12-27_00:00:00'     # Initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
-eformateddate='2033-12-28_00:00:00'     # end date to process
+model="MPIESM12LR"
+sformateddate='2005-12-31_00:00:00'     # Initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
+eformateddate='2006-01-02_00:00:00'     # end date to process
 
 case ${model} in
   CanESM2)
