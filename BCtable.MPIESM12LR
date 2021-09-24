@@ -1,33 +1,33 @@
+data_path /oceano/gmeteo/DATA/ESGF/REPLICA/DATA/CMIP6/CMIP/MPI-M/MPI-ESM1-2-LR/
 project CMIP6
 institute MPI-M
 model MPI-ESM1-2-LR
-activity ScenarioMIP
-experiment ssp585
-era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis 
+activity CMIP
+experiment historical
+interval 3hour
+era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis  
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-sftlf    172  1    v20190710 r1i1p1f1 fx     -    fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-orog     129  1    v20190710 r1i1p1f1 fx     -    fx      only_ic|set_start_time|rename(fx_orog)
-orog     129  1    v20190710 r1i1p1f1 fx     -    fx      fixed_to_6h
-ta       11   109  v20190710 r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
-ua       33   109  v20190710 r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
-va       34   109  v20190710 r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
-hus      52   109  v20190710 r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
-ps       1    1    v20190710 r1i1p1f1 6hr    -    6hrLev
-psl      2    1    v20190710 r1i1p1f1 6hr    -    6hrPlev shift_time(-3hour)
-siconc   31   1    v20190710 r1i1p1f1 day    -    SIday   remapnn|sea_masked|percent2one|day_to_6h
-tos      37   1    v20190710 r1i1p1f1 3hr    -    3hr     remapnn|sea_masked|celsius2K
-#
+sftlf    172  1    v*        r1i1p1f1 fx     -    fx      only_ic|is_land_mask|percent2one|set_start_time|fixed_to_Nh|rename(fx_sftlf)
+orog     129  1    v*        r1i1p1f1 fx     -    fx      only_ic|set_start_time|fixed_to_Nh|rename(fx_orog)
+ta       11   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
+ua       33   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
+va       34   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
+hus      52   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
+ps       1    1    v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|
+psl      2    1    v*        r1i1p1f1 6hr    -    6hrPlev Mh_to_Nh|shift_time(-3hour)
+siconc   31   1    v*        r1i1p1f1 day    -    SIday   remapnn|sea_masked|percent2one|day_to_Nh
+tos      37   1    v*        r1i1p1f1 3hr    -    3hr     remapnn|sea_masked|celsius2K
 # Soil initial conditions from ERA-Interim
 #
 #                   Unused fields filter
 #                   ------------- --------------------------------------------
-soil139  139  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil170  170  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil183  183  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil236  236  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil39   39   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil40   40   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil41   41   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil42   42   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+soil139  139  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil170  170  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil183  183  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil236  236  112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil39   39   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil40   40   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil41   41   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+soil42   42   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
