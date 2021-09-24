@@ -9,9 +9,9 @@ era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-#sftlf    172  1    v*        r1i1p1f1 fx     -    fx      only_ic|is_land_mask|percent2one|set_start_time|fixed_to_Nh|rename(fx_sftlf)
-#orog     129  1    v*        r1i1p1f1 fx     -    fx      only_ic|set_start_time|fixed_to_Nh|rename(fx_orog)
-#ta       11   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
+sftlf    172  1    v*        r1i1p1f1 fx     -    fx      only_ic|is_land_mask|percent2one|set_start_time|fixed_to_Nh|rename(fx_sftlf)
+orog     129  1    v*        r1i1p1f1 fx     -    fx      only_ic|set_start_time|fixed_to_Nh|rename(fx_orog)
+ta       11   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
 ua       33   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
 va       34   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
 hus      52   109  v*        r1i1p1f1 6hr    -    6hrLev  Mh_to_Nh|set_hybrid_levels
