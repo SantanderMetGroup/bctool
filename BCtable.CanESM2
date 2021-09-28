@@ -5,6 +5,7 @@ model CanESM2
 experiment rcp45
 product output1
 interval 3hour
+remove_leap false
 
 abbr    grib ltype version   ensemble freq realm   table   filter
 ------- ---- ----- --------- -------- ---- ------  ------- ----------------- 
