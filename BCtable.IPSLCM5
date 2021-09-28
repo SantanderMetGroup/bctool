@@ -5,6 +5,8 @@ model IPSL-CM5A-MR
 experiment rcp85
 product output1
 era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis 
+interval 6hour
+remove_leap false
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
@@ -16,18 +18,18 @@ va       34   109  *          r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 hus      52   109  *          r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 ps       1    1    *          r1i1p1  6hr  atmos  6hrLev  
 psl      2    1    *          r1i1p1  6hr  atmos  6hrPlev 
-sic      31   1    *          r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_6h
-tos      37   1    *          r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_6h
-# soil139  139  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# soil170  170  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# soil183  183  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# soil236  236  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# soil39   39   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-# huss     52   105  v20111119  r1i1p1  day  atmos  day   
-# tas      11   105  v20111119  r1i1p1  day  atmos  day   
-# uas      33   105  v20111119  r1i1p1  day  atmos  day   
-# vas      34   105  v20111119  r1i1p1  day  atmos  day   
-# prsn     141  1    v20111119  r1i1p1  day  atmos  day   
+sic      31   1    *          r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_Nh
+tos      37   1    *          r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_Nh
+# soil139  139  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# soil170  170  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# soil183  183  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# soil236  236  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# soil39   39   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# soil40   40   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# soil41   41   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# soil42   42   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
+# huss     52   105  *          r1i1p1  day  atmos  day     day_to_Nh   
+# tas      11   105  *          r1i1p1  day  atmos  day     day_to_Nh    
+# uas      33   105  *          r1i1p1  day  atmos  day     day_to_Nh    
+# vas      34   105  *          r1i1p1  day  atmos  day     day_to_Nh    
+# prsn     141  1    *          r1i1p1  day  atmos  day     day_to_Nh    
