@@ -186,7 +186,6 @@ function time_slice(){
     ifile=$(findfile ${filespec} ${year})
     cdo -s seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} s84
     cdo -s selyear,${year} s84 ${ofile}
-    #ncatted -O -a units,time,d,, ${ofile}
     calendar=$(cdo -s -sinfo ${ofile} | grep Calendar | awk '{print $10}')
     if [ $calendar == "standard" ] && [ $noleap == "true" ]; then
 	timemsg "    Standard calendar, removing Feb 29 necessary"
@@ -453,7 +452,8 @@ function ecc_set_grb_ltype(){
 function convert2grb(){
   ifile=$1
   cdo -s -f grb copy ${ifile} s55
-  mv s55 ${ifile}
+  cdo -s -settunits,hours s55 s56 ;rm s55
+  mv s56 ${ifile}
 }
 
 function set_grb_code(){
@@ -494,6 +494,7 @@ model=$(bctable_header model)
 experiment=$(bctable_header experiment)
 extdata_path=$(bctable_header data_path)
 interval=$(bctable_header interval)
+noleap=$(bctable_header remove_leap)
 
 if test -z "${extdata_path}"; then
   timemsg "No data_path in BCtable. Trying to find out where are the data ..."
