@@ -19,7 +19,7 @@ psl     2    1     *         r1i1p1   6hr atmos   6hrPlev Mh_to_Nh
 tsl     139  112   *         r1i1p1   mon land    Lmon    BEGIN|only_closest_to_sdate|maskregion|fixed_to_Nh|split_soil_temp_grb|END
 mrlsl   39   112   *         r1i1p1   mon land    Lmon    BEGIN|only_closest_to_sdate|maskregion|fixed_to_Nh|split_soil_mois_grb|END
 tslsi   11   1     *         r1i1p1   day land    day     day_to_Nh
-tos	37   1     *         r1i1p1   day ocean   day     remapnn|sea_masked|day_to_Nh|rename(sst)
+tos     37   1     *         r1i1p1   day ocean   day     remapnn|sea_masked|day_to_Nh|rename(sst)
 sic     31   1     *         r1i1p1   day seaIce  day     sea_masked|day_to_Nh
 huss    52   105   *         r1i1p1   day atmos   day     day_to_Nh
 tas     11   105   *         r1i1p1   day atmos   day     day_to_Nh
