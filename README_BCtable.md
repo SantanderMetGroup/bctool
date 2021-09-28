@@ -105,14 +105,14 @@ output stream to be used by the next filter. This is a list of available filters
 :  Converts the stream to GRIB format
 
 **Mh_to_Nh**
-:  Temporal interpolation in time M-hourly frequency data to N-hourly frequency (M>N).
+:  Interpolation in time from M-hourly frequency to N-hourly frequency (M > N).
 
 **day_to_Nh**
-:  Temporal interpolation in time from daily to N-hourly frequency. Recommended
+:  Interpolation in time from daily to N-hourly frequency. Recommended
    only for slow-varying fields (SST, sea ice, ...).
 
 **fixed_to_Nh**
-:  Temporal interpolation fixed files in time N-hourly frequency.
+:  Interpolation in time of fixed files to N-hourly frequency.
 
 **is_land_mask**
 :  This filter flags the current variable as the land mask. This sets this
