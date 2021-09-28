@@ -23,6 +23,7 @@ model IPSL-CM5A-MR
 experiment rcp85
 product output1
 era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis
+remove_leap false
 interval 3hour
 
 abbr    grib ltype version   ensemble freq realm  table   filter
@@ -51,6 +52,12 @@ Lines can be commented out by using a `#` symbol.
 *data_path* is the path to a directory containing model data for a particular
 GCM. It should point to the directory where the
 `<experiment>/<frequency>/<realm>/...` structure lives.
+
+*era_interim_path* is the path to a directory containing EraInterim soil data data.
+
+*remove_leap* if "false" removing 29 Feb desired, and if "true" will be removed if exists.
+
+*interval* refers to the frequency (=N) of the output files after performing temporal inteprolation (Mh_toNh, day_to_Nh, fixed_to_Nh).
 
 The `grib` and `ltype` columns in the variable section should match those in
 the WRF Vtable used.
@@ -96,6 +103,9 @@ output stream to be used by the next filter. This is a list of available filters
 
 **convert2grb**
 :  Converts the stream to GRIB format
+
+**Mh_to_Nh**
+:  Temporal interpolation in time M-hourly frequency data to N-hourly frequency (M>N).
 
 **day_to_Nh**
 :  Temporal interpolation in time from daily to N-hourly frequency. Recommended
