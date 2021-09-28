@@ -8,5 +8,6 @@ cp ${SRC_DIR}/BCtable.* ${PREFIX}/share/bctool
 
 mkdir -p ${PREFIX}/share/bctool/data-download
 cp ${SRC_DIR}/data-download/* ${PREFIX}/share/bctool/data-download
-cp ${SRC_DIR}/data-download/bctool-download ${PREFIX}/bin/bctool-download
-chmod a+x ${PREFIX}/bin/bctool-download
+
+cp ${SRC_DIR}/bin/bctool-esgf-{search,selection,metalink} ${PREFIX}/bin/
+chmod a+x ${PREFIX}/bin/bctool-esgf-{search,selection,metalink}
