@@ -3,33 +3,34 @@ project cmip5
 institute IPSL
 model IPSL-CM5A-MR
 experiment rcp85
-product output1
+interval 6hour
+remove_leap true
 era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis 
 interval 6hour
 remove_leap false
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-sftlf    172  1    *          r0i0p0  fx   atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-orog     129  1    *          r0i0p0  fx   atmos  fx      only_ic|set_start_time|rename(fx_orog)
-ta       11   109  *          r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
-ua       33   109  *          r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
-va       34   109  *          r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
-hus      52   109  *          r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
-ps       1    1    *          r1i1p1  6hr  atmos  6hrLev  
-psl      2    1    *          r1i1p1  6hr  atmos  6hrPlev 
-sic      31   1    *          r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_Nh
-tos      37   1    *          r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_Nh
-# soil139  139  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# soil170  170  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# soil183  183  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# soil236  236  112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# soil39   39   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# soil40   40   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# soil41   41   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# soil42   42   112  *          r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_Nh|set_extension(grb)|END
-# huss     52   105  *          r1i1p1  day  atmos  day     day_to_Nh   
-# tas      11   105  *          r1i1p1  day  atmos  day     day_to_Nh    
-# uas      33   105  *          r1i1p1  day  atmos  day     day_to_Nh    
-# vas      34   105  *          r1i1p1  day  atmos  day     day_to_Nh    
-# prsn     141  1    *          r1i1p1  day  atmos  day     day_to_Nh    
+sftlf    172  1    *  	     r0i0p0   fx   atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
+orog     129  1    *  	     r0i0p0   fx   atmos  fx      only_ic|set_start_time|rename(fx_orog)
+ta       11   109  *  	     r1i1p1   6hr  atmos  6hrLev  set_hybrid_levels
+ua       33   109  *  	     r1i1p1   6hr  atmos  6hrLev  set_hybrid_levels
+va       34   109  *  	     r1i1p1   6hr  atmos  6hrLev  set_hybrid_levels
+hus      52   109  *  	     r1i1p1   6hr  atmos  6hrLev  set_hybrid_levels
+ps       1    1    *  	     r1i1p1   6hr  atmos  6hrLev  
+psl      2    1    *  	     r1i1p1   6hr  atmos  6hrPlev 
+sic      31   1    *  	     r1i1p1   day  seaIce day     remapnn|sea_masked|tinterp2interval
+tos      37   1    *  	     r1i1p1   day  ocean  day     remapnn|sea_masked|tinterp2interval
+soil139  139  112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil170  170  112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil183  183  112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil236  236  112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil39   39   112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil40   40   112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil41   41   112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil42   42   112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+#huss     52   105  *        r1i1p1   day  atmos  day     tinterp2interval
+#tas      11   105  *  	     r1i1p1   day  atmos  day     tinterp2interval
+#uas      33   105  *  	     r1i1p1   day  atmos  day     tinterp2interval
+#vas      34   105  *  	     r1i1p1   day  atmos  day     tinterp2interval
+#prsn     141  1    *        r1i1p1   day  atmos  day     tinterp2interval
