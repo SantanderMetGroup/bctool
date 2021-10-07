@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------
 #+ Settings
 #--------------------------------------------------------------------------
-#set -euo pipefail
+set -eo pipefail     # abort execution on error (e), abort execution on error in pipe command (o)
 BCTOOL_DEBUG=${BCTOOL_DEBUG:-0}
 test "${BCTOOL_DEBUG}" -ne 0 && set -x
 
