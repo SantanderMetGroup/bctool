@@ -28,30 +28,13 @@ case ${model} in
   *) echo "Unknown model: ${model}"; exit ;;
 esac
 
+# Running preprocessor.ESGF
 ./preprocessor.ESGF ${sformateddate} ${eformateddate} ${BCTABLE}
 test $? -eq 0 || exit 1
 
-# Running WPS and WRF
-HOMEDIR=`pwd`
-WRFDIR=${WRFDIR:-WRF}
-./util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
-cd $HOMEDIR/$WRFDIR
-
-
-# Functions for updating namelists
-function format_date(){
-  if [ $varfrs == "start" ] ; then
-    date=$sformateddate
-  elif [ $varfrs == "end" ] ; then
-    date=$eformateddate
-  fi
-  year=`echo $date | awk -F'-' '{ print $1 }'`
-  month=`echo $date | awk -F'-' '{ print $2 }'`
-  day=`echo $date | awk -F'-' '{ print $3 }' | awk -F'_' '{ print $1 }'`
-  hour=`echo $date | awk -F'_' '{ print $2 }' | awk -F':' '{ print $1 }'`
-}
-
-
+#--------------------------------------------------------------------------
+# Functions for setting the namelist.wps and namlist.input
+#--------------------------------------------------------------------------
 function setnml(){
   var=$1
   value=$2
@@ -59,27 +42,26 @@ function setnml(){
   varsec=${var%%.*}
   varkey=${var##*.}
   grep -q -E "\ *${varkey}\ *=" ${nml}
-  if [ $? -eq 0 ]; then
+  if [ $? -eq 0 ]; then  
     sed -i -e 's@^\ *'${varkey}'\ *=.*$@'${varkey}' = '${value}',@' ${nml}
+    
+    # Updating start and end date of the simulation run
+    if [[ ${var%%_*} == @(start|end) ]]; then
+      case "$(echo ${var%%_*})" in
+        start) date="$sformateddate";;
+        end) date="$eformateddate";;
+      esac
+      read year month day hour trash <<< `echo ${date} | tr '_T:-' '    '`
+      for sufix in year month day hour date; do
+        if [ ${var##*_} == $sufix ] ; then
+          eval arg=\$$sufix
+          sed -i -e 's@^\ *'${varkey}'\ *=.*$@'${varkey}' = '${arg}',@' ${nml}
+        fi
+      done
+    fi
   else
     sed -i -e 's@^\ *'\&${varsec}'\ *$@ \&'${varsec}'\n'${varkey}' = '${value}',@' ${nml}
-  fi
-  if [ $var == "start_date" ]; then
-    sed -i -e 's@^\ *'${varkey}'\ *=.*$@'${varkey}' = "'${sformateddate}'",@' ${nml}
-  elif [ $var == "end_date" ]; then
-    sed -i -e 's@^\ *'${varkey}'\ *=.*$@'${varkey}' = "'${eformateddate}'",@' ${nml}
-  fi  
-  varfrs=${var%%_*}
-  varsec=${var##*_}
-  if [ $varfrs == "start" ] || [ $varfrs == "end" ] && [ $varsec != "date" ]; then
-    format_date
-    for vartime in year month day hour ; do
-      if [ $varsec == $vartime ] ; then
-	eval arg=\$$vartime
-        sed -i -e 's@^\ *'${varkey}'\ *=.*$@'${varkey}' = '${arg}',@' ${nml}
-      fi
-    done
-  fi
+  fi 
 }														
 
 function updatenml(){
@@ -91,42 +73,53 @@ function updatenml(){
   done
 }
 
-#
-#  WPS
-#
+#--------------------------------------------------------------------------
+#  Downloading and preparing WPS and WRF binaries
+#--------------------------------------------------------------------------
+HOMEDIR=`pwd`
+WRFDIR=${WRFDIR:-WRF}
+./util/deploy_WRF_CMake_binaries.sh ${WRFDIR}
+cd $HOMEDIR/$WRFDIR
+
+#--------------------------------------------------------------------------
+#  Running WPS
+#--------------------------------------------------------------------------
+# Setting the namelist.wps
+cp namelist.wps.default namelist.wps
+updatenml ../templates/delta/namelist.wps.COMMON namelist.wps
+nmlmodel="../templates/delta/namelist.wps.${model}" 
+test -e ${nmlmodel} && updatenml ${nmlmodel} namelist.wps
+
+# Linking Vtable for the corresponing model
 ln -sf ../templates/${VTABLE} Vtable
 
-cp namelist.wps.default namelist.wps.FILE
-updatenml ../templates/delta/namelist.wps.COMMON namelist.wps.FILE
-
-for nmlsuffix in FILE
-do
-  nmlmodel="../templates/delta/namelist.wps.${nmlsuffix}.${model}"
-  test -e ${nmlmodel} && updatenml ${nmlmodel} namelist.wps.${nmlsuffix}
-done
-
+# Setting the correct METGRID.TBL
 test -f metgrid/METGRID.TBL.default || mv metgrid/METGRID.TBL metgrid/METGRID.TBL.default
 ln -sf ../../templates/METGRID.TBL metgrid/METGRID.TBL
 
+# Linking the grib files
 rm -f GRIBFILE.*
-rm -f FILE:*
 ./link_grib.sh ../BCdata/*.grb
-ln -sf namelist.wps.FILE namelist.wps
+
+# Running ungrib.exe
+rm -f FILE:*
 ./ungrib.exe >& ungrib_FILE.out
 
+# Interpolation from model to pressure levels
 rm -f PRES*
 ln -sf ../BCdata/ecmwf_coeffs
 export LD_LIBRARY_PATH=.libs # badly linked so in wps-cmake-v4.1.0
 ./util/calc_ecmwf_p.exe >& calc_ecmwf_p.out
 
+# Running metgrid.exe
 rm -f met_em*
 ln -sf ../templates/geo_em__EUR-44_WPS410.d01.nc geo_em.d01.nc
 ./metgrid.exe >& metgrid.out
 
 #--------------------------------------------------------------------------
-#  real + WRF
+#  Running real + WRF
 #--------------------------------------------------------------------------
-
+# Setting the namelist.input
 updatenml ../templates/delta/namelist.input.COMMON
 nmlmodel="../templates/delta/namelist.input.${model}"
 test -e ${nmlmodel} && updatenml ${nmlmodel}
