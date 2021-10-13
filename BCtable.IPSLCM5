@@ -34,3 +34,4 @@ soil42   42   112  *  	     r1i1p1   mon  land   Lmon    BEGIN|use_era_interim|m
 #uas      33   105  *  	     r1i1p1   day  atmos  day     tinterp2interval
 #vas      34   105  *  	     r1i1p1   day  atmos  day     tinterp2interval
 #prsn     141  1    *        r1i1p1   day  atmos  day     tinterp2interval
+#--------------------------------------------------------------------------

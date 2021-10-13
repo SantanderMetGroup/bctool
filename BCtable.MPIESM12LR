@@ -20,7 +20,7 @@ ps       1    1    *         r1i1p1f1 6hr    -    6hrLev
 psl      2    1    *         r1i1p1f1 6hr    -    6hrPlev shift_time(-3hour)|fixed2interval
 siconc   31   1    *         r1i1p1f1 day    -    SIday   remapnn|sea_masked|percent2one|tinterp2interval
 tos      37   1    *         r1i1p1f1 3hr    -    3hr     remapnn|sea_masked|celsius2K
-hus      52   105  *         r1i1p1f1 day    -    day     tinterp2interval
+huss     52   105  *         r1i1p1f1 day    -    day     tinterp2interval
 tas      11   105  *         r1i1p1f1 day    -    day     tinterp2interval
 uas      33   105  *         r1i1p1f1 day    -    day     tinterp2interval
 vas      34   105  *         r1i1p1f1 day    -    day     tinterp2interval
@@ -36,3 +36,4 @@ soil39   39   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed2interva
 soil40   40   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
 soil41   41   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
 soil42   42   112    - - - - -    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+#--------------------------------------------------------------------------
