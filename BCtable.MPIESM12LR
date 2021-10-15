@@ -17,7 +17,7 @@ ua       33   109  *         r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
 va       34   109  *         r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
 hus      52   109  *         r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
 ps       1    1    *         r1i1p1f1 6hr    -    6hrLev  
-psl      2    1    *         r1i1p1f1 6hr    -    6hrPlev shift_time(-3hour)|fixed2interval
+psl      2    1    *         r1i1p1f1 6hr    -    6hrPlev shift_time(-3hour)|tinterp2interval
 siconc   31   1    *         r1i1p1f1 day    -    SIday   remapnn|sea_masked|percent2one|tinterp2interval
 tos      37   1    *         r1i1p1f1 3hr    -    3hr     remapnn|sea_masked|celsius2K
 huss     52   105  *         r1i1p1f1 day    -    day     tinterp2interval
