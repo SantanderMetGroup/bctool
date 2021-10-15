@@ -3,7 +3,7 @@
 #--------------------------------------------------------------------------
 #+ Settings
 #--------------------------------------------------------------------------
-set -eo pipefail     # abort execution on error (e), abort execution on error in pipe command (o)
+set -eo pipefail     # abort execution on error (e), abort execution on undefined variable (u), abort execution on error in pipe command (o pipefail)
 BCTOOL_DEBUG=${BCTOOL_DEBUG:-0}
 test "${BCTOOL_DEBUG}" -ne 0 && set -x
 
@@ -274,14 +274,15 @@ function shift_time(){
 }
 
 function unleap(){
-  # not functional for the "360_day" calendar
-  nonstandard="360_day"
   ifile=$1.grb
-  ifleap=`cdo -s -sinfo ${ifile} | grep "02-29 "`
-  if [[ $? -eq 0 ]] && [[ $noleap == "true" ]] && [[ $frequency != "fx" ]] ; then   
-        if [  $calendar != $nonstandard ] ; then
-          timemsg "    Removing Feb 29"
+  if [[ $noleap == "true" ]] && [[ $frequency != "fx" ]] ; then 
+  	nonstandard="360_day" # not functional for the "360_day" calendar
+        check=`echo $(cdo -s -info ${ifile} | grep "02-29 " && echo true || echo false) | awk '{print $NF}'` # checking if date in the file
+        if [[  $check == "true" ]] && [[  $calendar != $nonstandard ]] ; then
+          timemsg "    		   removing Feb 29"
           cdo -s del29feb ${ifile} s86; mv s86 ${ifile}
+        else
+          timemsg "   		   Feb 29 not in the file or nonstandard calendar - not done"  
         fi
   fi
 }
