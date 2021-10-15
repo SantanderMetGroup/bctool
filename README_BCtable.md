@@ -22,34 +22,42 @@ institute IPSL
 model IPSL-CM5A-MR
 experiment rcp85
 product output1
+remove_leap false
+interval 3hour
 era_interim_path /oceano/gmeteo/DATA/ECMWF/INTERIM/Analysis
 
 abbr    grib ltype version   ensemble freq realm  table   filter
 ------- ---- ----- --------- -------- ---- ------ ------- ----------------- 
-sftlf    172  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
-orog     129  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|set_start_time|rename(fx_orog)
+sftlf    172  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|is_land_mask|percent2one|set_start_time|rename(sftlf)
+orog     129  1    v20111119  r0i0p0  fx   atmos  fx      only_ic|set_start_time|rename(orog)
 ta       11   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 ua       33   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 va       34   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 hus      52   109  v20111119  r1i1p1  6hr  atmos  6hrLev  set_hybrid_levels
 ps       1    1    v20111119  r1i1p1  6hr  atmos  6hrLev  
 psl      2    1    v20111119  r1i1p1  6hr  atmos  6hrPlev 
-sic      31   1    v20111119  r1i1p1  day  seaIce day     remapnn|sea_masked|day_to_6h
-tos      37   1    v20111119  r1i1p1  day  ocean  day     remapnn|sea_masked|day_to_6h
-soil139  139  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil170  170  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil183  183  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil236  236  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil39   39   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
-soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed_to_6h|set_extension(grb)|END
+sic      31   1    v20111119  r1i1p1  day  seaIce day     remapnn|sea_masked|tinterp2interval
+tos      37   1    v20111119  r1i1p1  day  ocean  day     remapnn|sea_masked|tinterp2interval
+soil139  139  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil170  170  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil183  183  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil236  236  112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil39   39   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil40   40   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil41   41   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
+soil42   42   112  v20120430  r1i1p1  mon  land   Lmon    BEGIN|use_era_interim|maskregion|fixed2interval|set_extension(grb)|unleap|END
 ```
 Lines can be commented out by using a `#` symbol.
 
 *data_path* is the path to a directory containing model data for a particular
 GCM. It should point to the directory where the
 `<experiment>/<frequency>/<realm>/...` structure lives.
+
+*era_interim_path* is the path to a directory containing EraInterim soil data data.
+
+*remove_leap* if "false" removing 29 Feb desired, and if "true" will be removed if exists.
+
+*interval* refers to the frequency of the output files after performing temporal inteprolation (tinterp2interval, fixed2interval).
 
 The `grib` and `ltype` columns in the variable section should match those in
 the WRF Vtable used.
@@ -96,9 +104,14 @@ output stream to be used by the next filter. This is a list of available filters
 **convert2grb**
 :  Converts the stream to GRIB format
 
-**day_to_6h**
-:  Temporal interpolation in time from daily to 6-hourly frequency. Recommended
-   only for slow-varying fields (SST, sea ice, ...).
+**tinterp2interval**
+:  Interpolation in time to N-hourly frequency (daily files, or 6-hourly to 3-hourly frequency). 
+   This filter is controld by "interval" given in the header
+
+**fixed2interval**
+:  Interpolation in time of fixed/slow-varing variabels to N-hourly frequency. Recommended
+   only for slow-varying fields (SST, sea ice, soil moisture...).
+   This filter is controld by "interval" given in the header.
 
 **is_land_mask**
 :  This filter flags the current variable as the land mask. This sets this
@@ -164,6 +177,12 @@ output stream to be used by the next filter. This is a list of available filters
    shift such as `shift_time(-3hour)` can be applied. This is not an optimal
    solution since averaged variables should NOT be used as input for an RCM, which
    expects instantaneous fields.
+
+**unleap**
+:  Removes 29 February from the data if "noleap" in the header is set to "true", 
+   and if the date in the processed file exists. The filter does not touch anything 
+   if the calendar in the files is "360_day" (i.e. each month has 30 days, which
+   is typically set  in the GCMs from the Hadley center - HadGEM* GCM model names).  
 
 **split_soil_mois_grb**
 :  This is ad-hoc filter to split the soil moisture information into a single

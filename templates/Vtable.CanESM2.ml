@@ -20,8 +20,8 @@ Param| Type |Level1|Level2| Name     |  Units   | Description                   
   37 |  1   |   0  |      | SST      | K        | Sea-Surface Temperature                  |
  139 | 112  |   0  |  10  | ST000010 | K        | T of 0-10 cm ground layer                |
  170 | 112  |  10  |  40  | ST010040 | K        | T of 10-40 cm ground layer               |
- 183 | 112  |  40  | 255  | ST040255 | K        | T of 40-405 cm ground layer              |
+ 183 | 112  |  40  | 149  | ST040405 | K        | T of 40-405 cm ground layer              |
   39 | 112  |   0  |  10  | SM000010 | fraction | Soil moisture of 0-10 cm ground layer    |
   40 | 112  |  10  |  40  | SM010040 | fraction | Soil moisture of 10-40 cm ground layer   |
-  41 | 112  |  40  | 255  | SM040255 | fraction | Soil moisture of 40-405 cm ground layer  |
+  41 | 112  |  40  | 149  | SM040405 | fraction | Soil moisture of 40-405 cm ground layer  |
 -----+------+------+------+----------+----------+------------------------------------------+

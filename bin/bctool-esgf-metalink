@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Some 'instance_id' do not end with the file, so I add .title to instance_id
+# Some 'instance_id' include |DATA_NODE, so i remove it with sub("\\|.*"; "")
+# Some 'instance_id' end with extension .nc_0 so we change it to .nc with sub("\\.nc_[0-9]+";".nc")
+# Some checksums may be null
+
+usage() {
+  echo "${0} JSON" >&2
+}
+
+while [[ $# -gt 0 ]]
+do
+  case "$1" in
+  -h | --help)
+    usage
+    exit 1
+    ;;
+  *)
+    from="$1"
+    shift 1
+    ;;
+  esac
+done
+
+echo '<metalink xmlns="urn:ietf:params:xml:ns:metalink">'
+cat "${from:-/dev/stdin}" | jq '
+{
+    url: .url[0]|split("|")[0],
+    size,
+    instance_id: (.instance_id|sub("\\|.*"; "")|sub("\\.nc_[0-9]+";".nc")|gsub("\\.(?!nc$)";"/")),
+    replica,
+    title,
+    checksum: (if .checksum then (.checksum|first|tostring) else null end),
+    checksum_type: (if .checksum_type then (.checksum_type|first|ascii_downcase|sub("sha";"sha-")|tostring) else null end)
+} |
+if .instance_id|endswith(".nc")|not then . + {instance_id: [.instance_id, .title]|join("/")} else . end' | \
+jq -rn '
+reduce inputs as $file (
+  {}; .[$file.instance_id].urls as $u | . + {($file.instance_id): {"urls": ($u + [$file.url]), "checksum": $file.checksum, "checksum_type": $file.checksum_type}}) |
+to_entries[] |
+"\t<file name=\""+(.key)+"\">",
+(if .value.checksum then "\t\t<hash type=\""+(.value.checksum_type|tostring)+"\">"+(.value.checksum|tostring)+"</hash>" else "" end),
+(.value.urls|unique|map("\t\t<url priority=\"1\">"+(.)+"</url>"))[],
+"\t</file>\n"'
+echo '</metalink>'

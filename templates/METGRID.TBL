@@ -13,6 +13,10 @@ name=ST
         fill_lev = 255 : ST040255(200100)
 # ELSE IF
         fill_lev =  10 : ST000010(200100)
+        fill_lev =  40 : ST010040(200100)
+        fill_lev = 405 : ST040405(200100)
+# ELSE IF
+        fill_lev =  10 : ST000010(200100)
         fill_lev =  35 : ST010035(200100)
         fill_lev = 100 : ST035100(200100)
         fill_lev = 300 : ST100300(200100)
@@ -37,6 +41,10 @@ name=SM
         fill_lev =  10 : SM000010(200100)
         fill_lev =  40 : SM010040(200100)
         fill_lev = 255 : SM040255(200100)
+# ELSE IF
+        fill_lev =  10 : SM000010(200100)
+        fill_lev =  40 : SM010040(200100)
+        fill_lev = 405 : SM040405(200100)
 # ELSE IF
         fill_lev =  10 : SM000010(200100)
         fill_lev =  35 : SM010035(200100)
@@ -281,6 +289,14 @@ name=SM010200
         fill_missing=1.
         flag_in_output=FLAG_SM010200
 ========================================
+name=SM040405
+        interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search
+        masked=water
+        interp_mask=LANDSEA(0)
+        missing_value=-1.E30
+        fill_missing=1.
+        flag_in_output=FLAG_SM040405
+========================================
 name=ST000010
         interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search
         masked=water
@@ -352,6 +368,14 @@ name=ST010200
         missing_value=-1.E30
         fill_missing=285.
         flag_in_output=FLAG_ST010200
+========================================
+name=ST040405
+        interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search
+        masked=water
+        interp_mask=LANDSEA(0)
+        missing_value=-1.E30
+        fill_missing=285.
+        flag_in_output=FLAG_ST040405
 ========================================
 name=SM000007
         interp_option=sixteen_pt+four_pt+wt_average_4pt+wt_average_16pt+search

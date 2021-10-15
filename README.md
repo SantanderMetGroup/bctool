@@ -70,6 +70,39 @@ The following environment variables affect the behaviour of this tool:
 **BCTOOL_DEBUG**
 :  If set to a non-zero value, enables debugging information when running the tool.
 
+Data download
+-------------
+
+Example data can be downloaded previous adquisition of an authentication credential. To obtain it:
+
+```bash
+myproxyclient logon -s "${INDEX_NODE}" -l "${USER}" -b -o credential -p 7512 -t720
+```
+
+bctool provides scripts to proper download of data matching criteria from BCtables. These scripts are:
+
+- `bctool-esgf-search`: Queries ESGF given a BCtable and stores results in JSON format.
+- `bctool-esgf-selection` Generates `selection` files given a ESGF JSON database.
+- `bctool-esgf-metalink`: Generates Metalink files from `selection` files.
+
+The following example shows a data download for `BCtable.IPSLCM5`.
+
+```bash
+bin/bctool-esgf-selection BCtable.IPSLCM5 > selection
+bin/bctool-esgf-search selection > db.json
+bin/bctool-esgf-metalink db.json > dataset.meta4
+```
+
+To download the data from the previously generated file, we recommend to use [aria2c](https://aria2.github.io/) (included in conda installation).
+
+```bash
+aria2c -d "${DESTINATION}" -M dataset.meta4 \
+       --private-key=credential --certificate=credential --ca-certificate=credential \
+       --log-level=info --summary-interval=0 --console-log-level=warn \
+       --allow-overwrite=true --continue --file-allocation=none --remote-time=true \
+       --auto-file-renaming=false --conditional-get=true --check-integrity=true
+```
+
 Test
 ----
 

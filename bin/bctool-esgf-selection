@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Generate esgf-search selection from BCtables
+
+usage() {
+  echo "${0} [-h] BCTABLE" >&2
+}
+
+while [[ $# -gt 0 ]]
+do
+  case "$1" in
+    -h | --help)
+      usage
+      exit 1
+      ;;
+    *)
+      bctable="$1"
+      shift 1
+      ;;
+  esac
+done
+
+awk '
+BEGIN{
+  header = 0
+  subheader = 0
+}
+$1 == "#" {
+  next
+}
+$1 == "project" {
+  project=$2
+  if($2 == "cmip5") project = "CMIP5"
+}
+NF==2 {
+  globals[$1] = $2
+}
+NF > 2 && !header && !subheader {
+  header = 1
+  ncols = NF
+  for(i=1; i<=NF; i++) {
+    colnames[i] = $i
+  }
+  next
+}
+NF > 2 && header && subheader {
+  for(i=1; i<=NF; i++) {
+    facets[colnames[i]] = $i
+  }
+  for(global in globals) {
+    if(global == "project") printf("project=%s\n", project)
+    else if(global == "institute") printf("institute=%s\n", globals[global])
+    else if(global == "model") printf("model=%s\n", globals[global])
+    else if(global == "experiment") printf("experiment=%s\n", globals[global])
+    else if(global == "product") printf("product=%s\n", globals[global])
+  }
+  for(i=1; i<=NF; i++) {
+    if(colnames[i] == "abbr") printf("variable=%s\n", facets[colnames[i]])
+    else if(colnames[i] == "version" && facets[colnames[i]] != "*") printf("version=%s\n", facets[colnames[i]])
+    else if(colnames[i] == "ensemble") printf("ensemble=%s\n", facets[colnames[i]])
+    else if(colnames[i] == "freq") printf("time_frequency=%s\n", facets[colnames[i]])
+    else if(colnames[i] == "realm") printf("realm=%s\n", facets[colnames[i]])
+    else if(colnames[i] == "table") printf("cmor_table=%s\n", facets[colnames[i]])
+  }
+  print "type=File"
+  print ""
+}
+NF > 2 && header && !subheader {
+  subheader = 1
+}
+' "${bctable}"

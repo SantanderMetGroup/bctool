@@ -1,16 +1,22 @@
 package:
   name: bctool
-  version: "0.1"
+  version: "0.2"
 
 source:
-  git_url: git@gitlab.com:scds/bctool.git
+  git_url: https://github.com/Yoselita/bctool
 
 requirements:
   run:
-    - cdo
-    - nco
+    # preprocessor
+    - cdo=1.9.8
+    - nco=4.9.4
+
+    # data-download
     - jq
     - aria2
+    - myproxyclient=2.1.0
+    - curl
+    - gawk
 
 about:
   home: http://meteo.unican.es
