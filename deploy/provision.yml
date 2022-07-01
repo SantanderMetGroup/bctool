@@ -1,7 +1,0 @@
----
-- hosts: all
-  tasks:
-  - name: Install OS dependencies
-    yum:
-      name: wget
-      state: present
