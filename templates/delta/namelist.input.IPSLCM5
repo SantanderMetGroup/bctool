@@ -1,7 +1,0 @@
-# No 3D data at 00UTC
-start_hour 03
-end_day 03
-end_hour 21
-#
-num_metgrid_levels 40
-num_metgrid_soil_levels 4
