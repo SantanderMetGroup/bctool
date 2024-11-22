@@ -94,7 +94,7 @@ function time2Interval(){
   cdo -s seltimestep,1 ${ifile} s1
   cdo -s settime,00:00:00 s1 s0
   cdo -s seltimestep,${nrec} ${ifile} s1
-  cdo -s setdate,$(date --utc +%Y-%m-%d --d "`cdo -s showtimestamp s1` 1day") s1 s2
+  cdo -s setdate,$(date --utc +%Y-%m-%d --date "`cdo -s showtimestamp s1` 1day") s1 s2
   cdo -s settime,00:00:00 s2 s1
   cdo -s mergetime s0 ${ifile} s1 s3
   cdo -s inttime,$(cdo -s showdate s0 | tr -d ' '),00:00:00,${interval} s3  ${ofile}
