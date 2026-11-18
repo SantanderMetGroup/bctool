@@ -1,0 +1,39 @@
+data_path /gpfs/projects/meteo/WORK/ASNA/projects/cordex-core-cmip7/00_common/EC-Earth-Veg
+project CMIP7
+institute g114
+model EC-Earth3-ESM-1-1
+activity CMIP
+experiment esm-hist
+interval 6hour
+remove_leap false
+era5_path /gpfs/projects/meteo/WORK/ASNA/projects/cordex-core-cmip7/00_common/ERA5
+
+abbr    grib ltype version   ensemble freq realm  table   filter
+------- ---- ----- --------- -------- ---- ------ ------- -----------------
+sftlf    172  1    *         r1i1p1f1 fx     -    fx      only_ic|is_land_mask|percent2one|set_start_time|rename(fx_sftlf)
+orog     129  1    *         r1i1p1f1 fx     -    fx      only_ic|set_start_time|rename(fx_orog)
+ta       11   109  *         r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
+ua       33   109  *         r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
+va       34   109  *         r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
+hus      52   109  *         r1i1p1f1 6hr    -    6hrLev  set_hybrid_levels
+ps       1    1    *         r1i1p1f1 6hr    -    6hrLev
+psl      2    1    *         r1i1p1f1 6hr    -    6hrPlev
+ts       11   1    *         r1i1p1f1 6hr    -    6hr
+siconc   31   1    *         r1i1p1f1 day    -    SIday   remapnn|sea_masked|percent2one|tinterp2interval
+tos      37   1    *         r1i1p1f1 day    -    day     remapnn|sea_masked|celsius2K|tinterp2interval
+# These four daily variables supply the SSP-compatible 2 m and 10 m fields;
+# stage them before running.
+#hus      52   105  *         r1i1p1f1 day    -    day     tinterp2interval
+#tas      11   105  *         r1i1p1f1 day    -    day     tinterp2interval
+#uas      33   105  *         r1i1p1f1 day    -    day     tinterp2interval
+#vas      34   105  *         r1i1p1f1 day    -    day     tinterp2interval
+# ERA5 monthly GRIB1 supplies the soil initial conditions.
+soil139  139  112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+soil170  170  112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+soil183  183  112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+soil236  236  112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+soil39   39   112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+soil40   40   112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+soil41   41   112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+soil42   42   112  -         -        -      -    -       BEGIN|use_era5|fixed2interval|set_extension(grb)|unleap|END
+#--------------------------------------------------------------------------

@@ -62,6 +62,12 @@ GCM. It should point to the directory where the
 The `grib` and `ltype` columns in the variable section should match those in
 the WRF Vtable used.
 
+For the EC-Earth-Veg CMIP7 outputs, use `Vtable.EC-Earth-Veg`. It maps the
+parameter and level codes written by this BCtable to WPS fields, including the
+ERA5 soil layers. When linking bctool output for `ungrib.exe`, link only the
+`BCdata/*.grb` files; `ecmwf_coeffs` is an auxiliary coefficient file, not GRIB
+input.
+
 Filters
 -------
 
@@ -95,6 +101,12 @@ create a stream of data from the files stored following the ESGF DRS:
    boundaries. The path to the ERA-Interim data MUST be set in the header
    (*era_interim_path*, see example above)
 
+**use_era5**
+:  Selects the soil field matching the GRIB parameter code from an ERA5 monthly
+   single-level GRIB file named `ERA5-YYYYMM_*-sl.grib`. Set `era5_path` in the
+   BCtable header to the directory containing these files. The filter selects
+   the parameter from `var<grib-code>` (for example, `var139`).
+
 Most filters take an input stream, process it, and send out the result as an
 output stream to be used by the next filter. This is a list of available filters:
 
@@ -119,7 +131,8 @@ output stream to be used by the next filter. This is a list of available filters
 
 **maskregion**
 :  Masks (in practice, crops, due to missing value compression) a given region.
-   The default in `preprocessor.ESGF` is the EURO-CORDEX domain.
+   The default polygon is the EURO-CORDEX domain. This filter is not applied
+   by default; set `BCTOOL_NO_MASKREGION=0` to apply it to all variables.
 
 **only_ic**
 :  Tags a variable as only for initial conditions. This makes the processor

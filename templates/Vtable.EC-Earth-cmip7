@@ -1,0 +1,23 @@
+GRIB | Level| Level| Level| metgrid  |  metgrid | metgrid                                  |
+Code | Code |   1  |   2  | Name     |  Units   | Description                              |
+-----+------+------+------+----------+----------+------------------------------------------+
+  11 | 109  |   *  |      | TT       | K        | Temperature                              |
+  33 | 109  |   *  |      | UU       | m s-1    | U                                        |
+  34 | 109  |   *  |      | VV       | m s-1    | V                                        |
+  52 | 109  |   *  |      | SPECHUMD | kg kg-1  | Specific Humidity                        |
+ 172 |  1   |   0  |      | LANDSEA  | 0/1 Flag | Land/Sea flag                            |
+ 129 |  1   |   0  |      | SOILHGT  | m        | Terrain field of source analysis         |  
+   1 |  1   |   0  |      | PSFC     | Pa       | Surface Pressure                         |
+   2 |  1   |   0  |      | PMSL     | Pa       | Sea-level Pressure                       |
+  31 |  1   |   0  |      | SEAICE   | fraction | Sea-ice fraction                         |
+  37 |  1   |   0  |      | SST      | K        | Sea-surface temperature                  |
+  31 |  1   |   0  |      | SEAICE   | 0/1 Flag | Sea-Ice-Flag                             | 
+ 139 | 112  |   0  |  7   | ST000007 | K        | Soil temperature, 0-7 cm                 | 
+ 170 | 112  |   7  | 28   | ST007028 | K        | Soil temperature, 7-28 cm                |
+ 183 | 112  |  28  | 100  | ST028100 | K        | Soil temperature, 28-100 cm              |
+ 236 | 112  | 100  | 255  | ST100289 | K        | Soil temperature, 100-289 cm             |
+  39 | 112  |   0  |  7   | SM000007 | m3 m-3   | Soil moisture, 0-7 cm                    |
+  40 | 112  |   7  | 28   | SM007028 | m3 m-3   | Soil moisture, 7-28 cm                   |
+  41 | 112  |  28  | 100  | SM028100 | m3 m-3   | Soil moisture, 28-100 cm                 |
+  42 | 112  | 100  | 255  | SM100289 | m3 m-3   | Soil moisture, 100-289 cm                |
+-----+------+------+------+----------+----------+------------------------------------------+

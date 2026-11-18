@@ -6,6 +6,7 @@
 set -eo pipefail     # abort execution on error (e), abort execution on undefined variable (u), abort execution on error in pipe command (o pipefail)
 BCTOOL_DEBUG=${BCTOOL_DEBUG:-0}
 test "${BCTOOL_DEBUG}" -ne 0 && set -x
+BCTOOL_NO_MASKREGION=${BCTOOL_NO_MASKREGION:-1}
 
 # Read arguments
 sformateddate=$1     # Initial date to process as YYYY-MM-DD_HH:MM:SS (Ex. 1983-08-27_00:00:00)
@@ -18,7 +19,10 @@ test "${BCTABLE}" = ${BCTABLE#/} && BCTABLE=`pwd`/${BCTABLE}
 # Set default filters to be applied, before and after filter given in the BCTABLE
 wrfpostfilter="convert2grb|set_grb_code|set_grb_ltype|set_extension(grb)|unleap"
 prefilter="time_slice"
-postfilter="maskregion|${wrfpostfilter}"
+postfilter="${wrfpostfilter}"
+if [[ "${BCTOOL_NO_MASKREGION}" != "1" ]]; then
+  postfilter="maskregion|${wrfpostfilter}"
+fi
 
 #--------------------------------------------------------------------------
 #Functions
@@ -61,6 +65,63 @@ function findfile(){
         break
       fi
     done
+}
+
+function find_cmip7_files(){
+  local filespec=$1
+  local year=$2
+  local file daterange startdate enddate startyear endyear
+  while IFS= read -r file; do
+    daterange=${file##*_}
+    daterange=${daterange%.nc}
+    startdate=${daterange%%-*}
+    if [[ "${daterange}" == *-* ]]; then
+      enddate=${daterange##*-}
+    else
+      enddate=${startdate}
+    fi
+    startyear=${startdate:0:4}
+    endyear=${enddate:0:4}
+    if [[ "${startyear}" =~ ^[0-9]{4}$ && "${endyear}" =~ ^[0-9]{4}$ ]] &&
+       (( startyear <= year && endyear >= year )); then
+      echo "${file}"
+    fi
+  done < <(find "${drsdir}" -maxdepth 1 -type f -name "${filespec}" | sort)
+}
+
+function validate_cmip7_inputs(){
+  bctable_variables ${BCTABLE} | while read \
+    variable gribcode ltype version run frequency realm table filter
+  do
+    test "${variable:0:1}" = "#" && continue
+    if [[ "${filter}" == *use_era5* ]]; then
+      era5path=$(bctable_header era5_path)
+      test -n "${era5path}" || errormsg "'era5_path' is required for ${variable}"
+      test -d "${era5path}" || errormsg "Non-existing ERA5 path: ${era5path}"
+      for year in $(seq ${iyy} ${fyy})
+      do
+        ifile=$(find -L "${era5path}" -maxdepth 1 -type f \
+          -name "ERA5-${year}${imm}_*-sl.grib" -print -quit)
+        test -n "${ifile}" || errormsg "No ERA5 soil file for ${year}${imm} under ${era5path}"
+      done
+      continue
+    fi
+    drsdir="${extdata_path}"
+    filespec="${variable}_*_${frequency}_*_${model}_${experiment}_${run}*.nc"
+    for year in $(seq ${iyy} ${fyy})
+    do
+      if test "${frequency}" == "fx"; then
+        ifile=$(find ${drsdir} -type f -name "${filespec}" -print -quit)
+      else
+        mapfile -t input_files < <(find_cmip7_files ${filespec} ${year})
+        ifile=${input_files[0]:-}
+      fi
+      test -n "${ifile}" || errormsg "No input file matching ${filespec} for ${year} under ${drsdir}"
+      if [[ "${filter}" == *only_ic* ]]; then
+        break
+      fi
+    done
+  done
 }
 
 function copy(){
@@ -165,6 +226,7 @@ EOF
 function only_closest_to_sdate(){
   ofile=$1
   ifile=$(findfile ${filespec} ${year})
+  test -n "${ifile}" || errormsg "No input file matching ${filespec} for ${year} under ${drsdir}"
   cdo seltimestep,$(recordOfClosestDate ${ifile} ${sformateddate/_/T}) ${ifile} s59
   cdo settime,${sformateddate//*_/} -setdate,${sformateddate//_*/} s59 ${ofile}
   rm s59
@@ -173,10 +235,18 @@ function only_closest_to_sdate(){
 function time_slice(){
   ofile=$1
   if test "${frequency}" == "fx"; then
-    ifile=$(find ${drsdir} -type f -name "${filespec}" | head -n 1)
+    ifile=$(find ${drsdir} -type f -name "${filespec}" -print -quit)
+    test -n "${ifile}" || errormsg "No input file matching ${filespec} under ${drsdir}"
     copy ${ifile} ${ofile}
+  elif test "$(echo ${project} | tr '[:upper:]' '[:lower:]')" = "cmip7"; then
+    mapfile -t input_files < <(find_cmip7_files ${filespec} ${year})
+    test "${#input_files[@]}" -gt 0 || errormsg "No input files matching ${filespec} for ${year} under ${drsdir}"
+    cdo -s seldate,${sformateddate/_/T},${eformateddate/_/T} -mergetime "${input_files[@]}" s84
+    cdo -s selyear,${year} s84 ${ofile} ; rm s84
+    calendar=$(cdo -s -sinfo ${ofile} | grep Calendar | awk '{print $10}')
   else
     ifile=$(findfile ${filespec} ${year})
+    test -n "${ifile}" || errormsg "No input file matching ${filespec} for ${year} under ${drsdir}"
     cdo -s seldate,${sformateddate/_/T},${eformateddate/_/T} ${ifile} s84
     cdo -s selyear,${year} s84 ${ofile} ; rm s84
     calendar=$(cdo -s -sinfo ${ofile} | grep Calendar | awk '{print $10}')
@@ -194,6 +264,20 @@ function use_era_interim(){
   ifile="${ERAINPATH}/${arbitrary_year}/${imm}/INTERIM075_${arbitrary_year}${imm}_SFC_${gribcode}.128_an.grb"
   calendar=$(cdo -s -sinfo ${ifile} | grep Calendar | awk '{print $10}')
   copy ${ifile} ${ofile}
+}
+
+function use_era5(){
+  ofile=$1
+  ERA5PATH=$(bctable_header era5_path)
+  if test -z "${ERA5PATH}"; then
+    errormsg "'era5_path' not set in ${BCTABLE}, required by use_era5"
+  fi
+  ifile=$(find -L "${ERA5PATH}" -maxdepth 1 -type f \
+    -name "ERA5-${year}${imm}_*-sl.grib" -print -quit)
+  test -n "${ifile}" || errormsg "No ERA5 soil file for ${year}${imm} under ${ERA5PATH}"
+  era5_variable="var${gribcode}"
+  cdo -s selname,${era5_variable} ${ifile} ${ofile}
+  calendar=$(cdo -s -sinfo ${ofile} | grep Calendar | awk '{print $10}')
 }
 
 
@@ -480,10 +564,6 @@ timemsg BEGIN
 read iyy imm trash <<< `echo $sformateddate | tr '_T:-' '    '`
 read fyy fmm trash <<< `echo $eformateddate | tr '_T:-' '    '`
 tmpDir=`pwd`/BCdata
-mkdir -p ${tmpDir}
-cd ${tmpDir}
-
-write_static_files
 
 project=$(bctable_header project)
 model=$(bctable_header model)
@@ -505,22 +585,43 @@ fi
 test -d "${extdata_path}" || errormsg "Non-existing data path: ${extdata_path}"
 timemsg "Retrieving global data from: ${extdata_path}"
 
+if test "$(echo ${project} | tr '[:upper:]' '[:lower:]')" = "cmip7"; then
+  timemsg "Validating CMIP7 input files"
+  validate_cmip7_inputs
+fi
+
+mkdir -p ${tmpDir}
+cd ${tmpDir}
+write_static_files
+
 bctable_variables ${BCTABLE} | while read \
   variable gribcode ltype version run frequency realm table filter
 do
   test "${variable:0:1}" = "#" && continue
   timemsg "Processing ${variable}"
   case "$(echo ${project} | tr '[:upper:]' '[:lower:]')" in
-    cmip5) drsdir="${extdata_path}/${experiment}/${frequency}/${realm}/${table}/${run}/${version}";;
-    cmip6) drsdir="${extdata_path}/${experiment}/${run}/${table}/*/gn/${version}";;
+    cmip5)
+      drsdir="${extdata_path}/${experiment}/${frequency}/${realm}/${table}/${run}/${version}"
+      filespec="${variable}_${table}_${model}_${experiment}_${run}*.nc"
+      ;;
+    cmip6)
+      drsdir="${extdata_path}/${experiment}/${run}/${table}/*/gn/${version}"
+      filespec="${variable}_${table}_${model}_${experiment}_${run}*.nc"
+      ;;
+    cmip7)
+      drsdir="${extdata_path}"
+      filespec="${variable}_*_${frequency}_*_${model}_${experiment}_${run}*.nc"
+      ;;
+    *) errormsg "Unsupported project: ${project}";;
   esac
-  filespec="${variable}_${table}_${model}_${experiment}_${run}*.nc"
   is_only_ic=0
   for year in $(seq $iyy $fyy)
   do
     timemsg "  YEAR: ${year}"
     apply_filter "${prefilter}|${filter}|${postfilter}"
-    test "${is_only_ic}" -eq 1 && break
+    if test "${is_only_ic}" -eq 1; then
+      break
+    fi
   done # year
 done # while read
 
