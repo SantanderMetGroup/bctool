@@ -1,4 +1,4 @@
-data_path /gpfs/projects/meteo/WORK/ASNA/projects/cordex-core-cmip7/00_common/EC-Earth-Veg
+data_path /gpfs/projects/meteo/WORK/ASNA/projects/cordex-core-cmip7/00_common/EC-Earth
 project CMIP7
 institute g114
 model EC-Earth3-ESM-1-1
